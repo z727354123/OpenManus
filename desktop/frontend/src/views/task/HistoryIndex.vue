@@ -1,4 +1,4 @@
-<template :lang="i18n.locale">
+<template>
   <div class="main-content">
     <el-card>
       <template #header>
@@ -54,11 +54,11 @@
 
 <script setup>
 import { ref, reactive, inject, computed, onMounted, onBeforeUnmount, onUnmounted, watch } from 'vue'
-import { FolderAdd, Promotion, Eleme, CircleClose } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 import { useConfig } from '@/store/config'
 import { useI18n } from 'vue-i18n'
-import i18n from '@/locales/i18n'
 
+const router = useRouter()
 const utils = inject('utils')
 const config = useConfig()
 const { t } = useI18n()
@@ -171,7 +171,6 @@ function search() {
 
 }
 
-
 const handleSelectionChange = (val) => {
   selectedRows.value = val
 }
@@ -229,120 +228,10 @@ function resetSearch() {
 
 function toTaskInfo(taskId) {
   console.log("toTaskInfo:", taskId)
+  router.push("/task/"+taskId)
 }
 
 
 </script>
 
-<style scoped>
-.output-area {
-  flex-grow: 1;
-}
-
-.dialog-user {
-  display: flex;
-  justify-content: center;
-  align-items: space-between;
-  margin-bottom: 16px;
-}
-
-.dialog-user .blank {
-  flex-grow: 1;
-}
-
-.dialog-user .content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: end;
-  border-radius: 12px;
-  background-color: var(--el-fg-color);
-}
-
-.dialog-user .title {
-  /** 防止子元素宽度被设置为100%, 子元素的align-self设置除auto和stretch之外的值 */
-  align-self: flex-end;
-  margin: 6px 16px;
-  font-size: 15px;
-}
-
-.dialog-user .prompt {
-  /** 防止子元素宽度被设置为100%, 子元素的align-self设置除auto和stretch之外的值 */
-  align-self: flex-end;
-  margin: 0px 16px 6px 16px;
-}
-
-
-.dialog {
-  width: 100%;
-}
-
-
-.dialog-ai {
-  margin-bottom: 16px;
-  background-color: var(--el-fg-color);
-  border-radius: 12px;
-}
-
-.dialog-ai .title {
-  margin: 6px 12px;
-  font-size: 15px;
-}
-
-.input-area {
-  flex-grow: 0;
-  width: 100%;
-  max-height: 180px;
-  padding-left: 80px;
-  padding-right: 80px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.input-box {
-  width: 100%;
-  border-radius: 16px;
-  background-color: var(--el-fg-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.input-style {
-  width: 100%;
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-
-.input-style :deep(.el-textarea__inner) {
-  outline: none;
-  border: none;
-  resize: none;
-  box-shadow: none;
-}
-
-.add-file-area {
-  margin-left: 16px;
-  margin-right: 8px;
-}
-
-.send-area {
-  margin-left: 8px;
-  margin-right: 16px;
-}
-
-.tips {
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-  padding-top: 10px;
-}
-
-.sub-step-time {
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-}
-</style>
+<style scoped></style>

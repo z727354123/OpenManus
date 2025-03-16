@@ -13,9 +13,12 @@ export default {
   copy: "复制",
   paste: "粘贴",
   cut: "剪切",
+  baseInfo: "基本信息",
 
   createdDt: "创建时间",
   updatedDt: "更新时间",
+  noData: "暂无数据",
+
   menu: {
     task: "任务",
     history: "历史记录",

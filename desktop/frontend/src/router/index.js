@@ -32,7 +32,7 @@ const router = createRouter({
         },
         {
           path: 'history',
-          component: () => import('@/views/task/History.vue'),
+          component: () => import('@/views/task/HistoryIndex.vue'),
           meta: {
             keepAlive: false,
             title: "历史记录",

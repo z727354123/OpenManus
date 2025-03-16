@@ -13,9 +13,12 @@ export default {
   copy: "Copy",
   paste: "Paste",
   cut: "Cut",
+  baseInfo: "Base Info",
 
   createdDt: "Created Date",
   updatedDt: "Updated Date",
+  noData: "No Data",
+  
   menu: {
     task: "Task",
     history: "History",

@@ -1,4 +1,4 @@
-<template :lang="i18n.locale">
+<template>
   <div class="main-content fc">
     <el-scrollbar ref="scrollRef">
       <div class="output-area" v-show="taskInfo.taskId != null">
@@ -6,9 +6,12 @@
         <div class="dialog-user">
           <div class="blank"></div>
           <div class="content">
-            <el-text class="title">
-              {{ t('user') }}
-            </el-text>
+            <div class="title fxc">
+              <img src="@/assets/img/user.png" class="user-img"/>
+              <el-text>
+                {{ t('user') }}
+              </el-text>
+            </div>
             <el-text class="prompt">
               {{ taskInfo.prompt }}
             </el-text>
@@ -84,7 +87,7 @@
 
 <script setup>
 import { ref, reactive, inject, computed, onMounted, onUnmounted } from 'vue'
-import { FolderAdd, Promotion, Eleme, CircleClose } from '@element-plus/icons-vue'
+import { FolderAdd, Promotion, User, CircleClose } from '@element-plus/icons-vue'
 import { useConfig } from '@/store/config'
 import { useI18n } from 'vue-i18n'
 
@@ -296,6 +299,7 @@ function stop() {
 <style scoped>
 .output-area {
   flex-grow: 1;
+  margin-top: 10px;
 }
 
 .dialog-user {
@@ -331,11 +335,16 @@ function stop() {
   margin: 0px 16px 6px 16px;
 }
 
+.dialog-user .user-img{
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
+  margin-bottom: 4px;
+}
 
 .dialog {
   width: 100%;
 }
-
 
 .dialog-ai {
   margin-bottom: 16px;
