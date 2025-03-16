@@ -115,11 +115,22 @@ watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
 function activeMenu() {
   const currRoute = router.currentRoute
   const path = currRoute.value.path
-  // console.log("currRoute path:", path)
+  console.log("currRoute path:", path)
   let index = getIndexByPath(path)
-  // console.log("index:", index)
+  console.log("index:", index)
   if (utils.notNull(index)) {
     return index
+  }
+  // 没有匹配上,截取掉path最后一级,再匹配一次
+  const lastIndex = path.lastIndexOf('/')
+  if (lastIndex != -1) {
+    const newPath = path.substring(0, lastIndex)
+    console.log("截取后newPath:", newPath)
+    index = getIndexByPath(newPath)
+    console.log("截取后index:", index)
+    if (utils.notNull(index)) {
+      return index
+    }
   }
   return "1"
 }

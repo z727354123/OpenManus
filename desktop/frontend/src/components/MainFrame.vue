@@ -143,7 +143,7 @@ header {
   width: 100%;
   height: 44px;
   padding: 0px;
-  background-color: var(--el-bg-color);
+  background-color: var(--el-fg-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -169,6 +169,7 @@ main {
   width: 100%;
   padding: 0px;
   overflow: hidden;
+  background-color: var(--el-bg-color);
 }
 
 .menu-logo {

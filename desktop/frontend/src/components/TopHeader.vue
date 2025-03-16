@@ -27,31 +27,42 @@
       </el-link>
     </div>
 
-    <!-- 右侧固定下拉 -->
-    <el-dropdown trigger="click" @command="handleSwitchLang" class="fxc plr-16">
-      <span class="el-dropdown-link">
-        {{ selectedLang.name }}
-        <el-icon class="el-icon--right">
-          <arrow-down />
-        </el-icon>
-      </span>
-      <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item v-for="lang in langList" :key="lang" :command="lang">
-            {{ lang.name }}
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </template>
-    </el-dropdown>
+    <!-- 右侧 -->
+    <div class="fxc">
+      <div class="mlr-8">
+        <el-switch v-model="isDark" :active-action-icon="Moon" :inactive-action-icon="Sunny" width="40"
+          style="--el-switch-on-color: #4c4d4f; --el-switch-off-color: #f2f2f2;" />
+      </div>
+
+      <!-- 右侧固定下拉 -->
+      <el-dropdown trigger="click" @command="handleSwitchLang" class="fxc plr-16">
+        <span class="el-dropdown-link">
+          {{ selectedLang.name }}
+          <el-icon class="el-icon--right">
+            <arrow-down />
+          </el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item v-for="lang in langList" :key="lang" :command="lang">
+              {{ lang.name }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { ArrowDown, Refresh } from '@element-plus/icons-vue'
+import { ArrowDown, Refresh, Moon, Sunny } from '@element-plus/icons-vue'
 import { useConfig } from '@/store/config'
+/** 暗黑主题切换 */
+import { useDark } from '@vueuse/core'
 
 const config = useConfig()
+const isDark = useDark()
 
 const modelList = ref(config.modelList)
 
