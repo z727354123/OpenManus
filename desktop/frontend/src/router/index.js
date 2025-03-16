@@ -14,16 +14,25 @@ const router = createRouter({
       children: [
         {
           path: 'task',
-          component: () => import('@/views/main/Task.vue'),
+          component: () => import('@/views/task/TaskIndex.vue'),
           meta: {
             keepAlive: false,
-            title: "任务",
+            title: "任务列表",
+            index: 0
+          }
+        },
+        {
+          path: 'task/:id',
+          component: () => import('@/views/task/TaskInfo.vue'),
+          meta: {
+            keepAlive: false,
+            title: "任务信息",
             index: 0
           }
         },
         {
           path: 'history',
-          component: () => import('@/views/main/Home.vue'),
+          component: () => import('@/views/task/History.vue'),
           meta: {
             keepAlive: false,
             title: "历史记录",

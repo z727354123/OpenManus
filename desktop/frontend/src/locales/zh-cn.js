@@ -1,4 +1,21 @@
 export default {
+  add: "新增",
+  edit: "编辑",
+  delete: "删除",
+  search: "搜索",
+  reset: "重置",
+  confirm: "确认",
+  cancel: "取消",
+  save: "保存",
+  submit: "提交",
+  export: "导出",
+  import: "导入",
+  copy: "复制",
+  paste: "粘贴",
+  cut: "剪切",
+
+  createdDt: "创建时间",
+  updatedDt: "更新时间",
   menu: {
     task: "任务",
     history: "历史记录",
@@ -12,6 +29,8 @@ export default {
   user: '用户',
   step: "步骤",
   promptInputPlaceHolder: "请输入任务提示词",
+  promptInput: "提示词输入",
+  promptInputKw: "提示词关键字",
   clearCacheSuccess: "清理缓存成功",
   openManusAgiTips: "以上内容由OpenManus生成, 仅供参考和借鉴",
   taskStatus: {
