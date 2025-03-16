@@ -123,7 +123,7 @@ const buildEventSource = (taskId) => {
     // 处理错误情况
     loading.value = false
     eventSource.value.close()
-    taskInfo.value.status = "taskStatus.failed"
+    taskInfo.value.status = "failed"
     utils.pop("任务执行失败", "error")
   }
 
@@ -142,7 +142,7 @@ const handleEvent = (event, type) => {
       console.log('task completed');
       loading.value = false
       eventSource.value.close()
-      taskInfo.value.status = "taskStatus.success"
+      taskInfo.value.status = "success"
       utils.pop("任务已完成", "success")
       return
     }
@@ -287,7 +287,7 @@ function stop() {
   console.log("stop")
   loading.value = false
   eventSource.value.close()
-  taskInfo.value.status = "taskStatus.terminated"
+  taskInfo.value.status = "terminated"
   utils.pop("用户终止任务", "error")
 }
 
