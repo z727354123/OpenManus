@@ -143,6 +143,10 @@ header {
   width: 100%;
   height: 44px;
   padding: 0px;
+  /* width: calc(100% -32px);
+  margin-left: 16px;
+  margin-right: 16px;
+  border-radius: 6px; */
   background-color: var(--el-fg-color);
   display: flex;
   justify-content: center;

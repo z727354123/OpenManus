@@ -16,7 +16,7 @@ const router = createRouter({
           path: 'task',
           component: () => import('@/views/task/TaskIndex.vue'),
           meta: {
-            keepAlive: false,
+            keepAlive: true,
             title: "任务列表",
             index: 0
           }
@@ -25,7 +25,7 @@ const router = createRouter({
           path: 'task/:id',
           component: () => import('@/views/task/TaskInfo.vue'),
           meta: {
-            keepAlive: false,
+            keepAlive: true,
             title: "任务信息",
             index: 0
           }
@@ -34,7 +34,7 @@ const router = createRouter({
           path: 'history',
           component: () => import('@/views/task/HistoryIndex.vue'),
           meta: {
-            keepAlive: false,
+            keepAlive: true,
             title: "历史记录",
             index: 0
           }

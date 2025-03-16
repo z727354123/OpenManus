@@ -42,5 +42,6 @@ export default {
     failed: "失败",
     running: "运行中",
     terminated: "终止",
-  }
+  },
+  newTask: "新任务",
 }

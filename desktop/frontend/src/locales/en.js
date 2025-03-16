@@ -43,5 +43,7 @@ export default {
     failed: "Failed",
     running: "Running",
     terminated: "Terminated",
-  }
+  },
+  newTask: "New Task",
+
 }

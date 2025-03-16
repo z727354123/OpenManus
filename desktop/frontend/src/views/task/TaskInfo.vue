@@ -54,7 +54,7 @@
         </div>
       </div>
 
-      <div>
+      <div class="task-status" v-show="taskInfo != null">
         <el-text class="pr-10">{{ t('taskStatus.name') }}:</el-text>
         <el-text>{{ taskInfo.status }}</el-text>
       </div>
@@ -98,8 +98,6 @@ const taskInfo = computed(() => {
 <style scoped>
 .output-area {
   flex-grow: 1;
-  margin-top: 10px;
-  margin-bottom: 10px;
 }
 
 .dialog-user {
@@ -146,9 +144,7 @@ const taskInfo = computed(() => {
   width: 100%;
 }
 
-
 .dialog-ai {
-  margin-bottom: 16px;
   background-color: var(--el-fg-color);
   border-radius: 12px;
 }
@@ -158,56 +154,10 @@ const taskInfo = computed(() => {
   font-size: 15px;
 }
 
-.input-area {
-  flex-grow: 0;
-  width: 100%;
-  max-height: 180px;
-  padding-left: 80px;
-  padding-right: 80px;
+.task-status {
+  align-self: self-start;
   padding-top: 12px;
-  padding-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.input-box {
-  width: 100%;
-  border-radius: 16px;
-  background-color: var(--el-fg-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.input-style {
-  width: 100%;
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-
-.input-style :deep(.el-textarea__inner) {
-  outline: none;
-  border: none;
-  resize: none;
-  box-shadow: none;
-}
-
-.add-file-area {
-  margin-left: 16px;
-  margin-right: 8px;
-}
-
-.send-area {
-  margin-left: 8px;
-  margin-right: 16px;
-}
-
-.tips {
-  color: var(--el-text-color-secondary);
-  font-size: 12px;
-  padding-top: 10px;
+  padding-bottom: 16px;
 }
 
 .sub-step-time {
