@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import sys
-from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
