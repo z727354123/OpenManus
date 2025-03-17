@@ -14,6 +14,10 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 sys.path.insert(0, current_dir)
 
+# Add root directory to Python path
+root_dir = os.path.dirname(parent_dir)
+sys.path.insert(0, root_dir)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -23,7 +27,6 @@ logger = logging.getLogger("mcp-server")
 # Import OpenManus tools
 from app.tool.browser_use_tool import BrowserUseTool
 from app.tool.file_saver import FileSaver
-from app.tool.google_search import GoogleSearch
 from app.tool.python_execute import PythonExecute
 from app.tool.terminate import Terminate
 
@@ -33,7 +36,6 @@ openmanus = FastMCP("openmanus")
 
 # Initialize tool instances
 browser_tool = BrowserUseTool()
-google_search_tool = GoogleSearch()
 python_execute_tool = PythonExecute()
 file_saver_tool = FileSaver()
 terminate_tool = Terminate()
@@ -92,20 +94,6 @@ async def get_browser_state() -> str:
     logger.info("Getting browser state")
     result = await browser_tool.get_current_state()
     return json.dumps(result.model_dump())
-
-
-# Google search tool
-@openmanus.tool()
-async def google_search(query: str, num_results: int = 10) -> str:
-    """Execute Google search and return list of relevant links.
-
-    Args:
-        query: Search query
-        num_results: Number of results to return (default is 10)
-    """
-    logger.info(f"Executing Google search: {query}")
-    results = await google_search_tool.execute(query=query, num_results=num_results)
-    return json.dumps(results)
 
 
 # Python execution tool
