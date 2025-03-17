@@ -6,9 +6,11 @@ from contextlib import AsyncExitStack
 from typing import Optional
 
 from colorama import Fore, init
+from openai import AsyncOpenAI
+
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-from openai import AsyncOpenAI
+
 
 # Add current directory to Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -21,9 +23,11 @@ root_dir = os.path.dirname(parent_dir)
 sys.path.insert(0, root_dir)
 from app.config import config
 
+
 # Initialize colorama
 def init_colorama():
     init(autoreset=True)
+
 
 class OpenManusClient:
     def __init__(self):
