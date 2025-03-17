@@ -139,7 +139,6 @@ function collectFormData() {
         }
     };
 
-    // Add optional fields
     const maxTokens = document.getElementById('llm-max-tokens').value;
     if (maxTokens) {
         configData.llm.max_tokens = parseInt(maxTokens);
