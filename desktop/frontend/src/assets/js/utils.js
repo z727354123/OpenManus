@@ -494,6 +494,13 @@ function debounce(func, delay) {
   }
 }
 
+function stringToLines(str) {
+  if (str == undefined || str == null) {
+    return []
+  }
+  return str.split('\n')
+}
+
 export default {
   /**
    * http请求 GET请求
@@ -635,5 +642,7 @@ export default {
   underScoreToCamelCase,
 
   debounce,
+
+  stringToLines,
 
 }

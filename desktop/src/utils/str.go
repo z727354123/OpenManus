@@ -1,10 +1,11 @@
-package main
+package utils
 
 import (
 	"encoding/json"
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 )
 
 // AnyToStr 任意类型数据转string
@@ -44,4 +45,20 @@ func AnyToStr(i interface{}) (string, error) {
 	default:
 		return "", fmt.Errorf("unable to cast %#v of type %T to string", i, i)
 	}
+}
+
+func IsEmpty(s string) bool {
+	return len(s) == 0
+}
+
+func IsNotEmpty(s string) bool {
+	return len(s) > 0
+}
+
+func IsBlank(s string) bool {
+	return len(s) == 0 || strings.TrimSpace(s) == ""
+}
+
+func IsNotBlank(s string) bool {
+	return len(s) > 0 && strings.TrimSpace(s) != ""
 }
