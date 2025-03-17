@@ -44,7 +44,7 @@ function fillConfigForm(exampleConfig) {
         setInputValue('llm-model', llm.model);
         setInputValue('llm-base-url', llm.base_url);
         setInputValue('llm-api-key', llm.api_key);
-        // Save example API key for later verification
+
         exampleApiKey = llm.api_key || '';
 
         setInputValue('llm-max-tokens', llm.max_tokens);
@@ -93,14 +93,12 @@ function saveConfig() {
     if (apiKey === exampleApiKey && exampleApiKey.includes('sk-')) {
         document.getElementById('config-error').textContent =
             `Please enter your own API key`;
-        // Highlight the API key input box
         document.getElementById('llm-api-key').parentElement.classList.add('error');
         return;
     } else {
         document.getElementById('llm-api-key').parentElement.classList.remove('error');
     }
 
-    // Send configuration to server
     fetch('/config/save', {
         method: 'POST',
         headers: {
@@ -111,13 +109,10 @@ function saveConfig() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            // Close pop-up
             document.getElementById('config-modal').classList.remove('active');
 
-            // Show success message
             alert('Configuration saved successfully! The application will use the new configuration on next startup.');
 
-            // Refresh page
             window.location.reload();
         } else {
             document.getElementById('config-error').textContent =
