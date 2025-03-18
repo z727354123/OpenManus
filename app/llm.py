@@ -196,6 +196,7 @@ class LLM:
 
             # Add token counting related attributes
             self.total_input_tokens = 0
+            self.total_completion_tokens = 0
             self.max_input_tokens = (
                 llm_config.max_input_tokens
                 if hasattr(llm_config, "max_input_tokens")
@@ -229,12 +230,15 @@ class LLM:
     def count_message_tokens(self, messages: List[dict]) -> int:
         return self.token_counter.count_message_tokens(messages)
 
-    def update_token_count(self, input_tokens: int) -> None:
+    def update_token_count(self, input_tokens: int, completion_tokens: int = 0) -> None:
         """Update token counts"""
         # Only track tokens if max_input_tokens is set
         self.total_input_tokens += input_tokens
+        self.total_completion_tokens += completion_tokens
         logger.info(
-            f"Token usage: Input={input_tokens}, Cumulative Input={self.total_input_tokens}"
+            f"Token usage: Input={input_tokens}, Completion={completion_tokens}, "
+            f"Cumulative Input={self.total_input_tokens}, Cumulative Completion={self.total_completion_tokens}, "
+            f"Total={input_tokens + completion_tokens}, Cumulative Total={self.total_input_tokens + self.total_completion_tokens}"
         )
 
     def check_token_limit(self, input_tokens: int) -> bool:
@@ -280,22 +284,58 @@ class LLM:
         formatted_messages = []
 
         for message in messages:
+            # Convert Message objects to dictionaries
             if isinstance(message, Message):
                 message = message.to_dict()
-            if isinstance(message, dict):
-                # If message is a dict, ensure it has required fields
-                if "role" not in message:
-                    raise ValueError("Message dict must contain 'role' field")
-                if "content" in message or "tool_calls" in message:
-                    formatted_messages.append(message)
-                # else: do not include the message
-            else:
+
+            if not isinstance(message, dict):
                 raise TypeError(f"Unsupported message type: {type(message)}")
 
-        # Validate all messages have required fields
-        for msg in formatted_messages:
-            if msg["role"] not in ROLE_VALUES:
-                raise ValueError(f"Invalid role: {msg['role']}")
+            # Validate required fields
+            if "role" not in message:
+                raise ValueError("Message dict must contain 'role' field")
+
+            # Process base64 images if present
+            if message.get("base64_image"):
+                # Initialize or convert content to appropriate format
+                if not message.get("content"):
+                    message["content"] = []
+                elif isinstance(message["content"], str):
+                    message["content"] = [{"type": "text", "text": message["content"]}]
+                elif isinstance(message["content"], list):
+                    # Convert string items to proper text objects
+                    message["content"] = [
+                        (
+                            {"type": "text", "text": item}
+                            if isinstance(item, str)
+                            else item
+                        )
+                        for item in message["content"]
+                    ]
+
+                # Add the image to content
+                message["content"].append(
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{message['base64_image']}"
+                        },
+                    }
+                )
+
+                # Remove the base64_image field
+                del message["base64_image"]
+
+            # Only include messages with content or tool_calls
+            if "content" in message or "tool_calls" in message:
+                formatted_messages.append(message)
+
+        # Validate all roles
+        invalid_roles = [
+            msg for msg in formatted_messages if msg["role"] not in ROLE_VALUES
+        ]
+        if invalid_roles:
+            raise ValueError(f"Invalid role: {invalid_roles[0]['role']}")
 
         return formatted_messages
 
@@ -371,7 +411,9 @@ class LLM:
                     raise ValueError("Empty or invalid response from LLM")
 
                 # Update token counts
-                self.update_token_count(response.usage.prompt_tokens)
+                self.update_token_count(
+                    response.usage.prompt_tokens, response.usage.completion_tokens
+                )
 
                 return response.choices[0].message.content
 
@@ -382,15 +424,24 @@ class LLM:
             response = await self.client.chat.completions.create(**params)
 
             collected_messages = []
+            completion_text = ""
             async for chunk in response:
                 chunk_message = chunk.choices[0].delta.content or ""
                 collected_messages.append(chunk_message)
+                completion_text += chunk_message
                 print(chunk_message, end="", flush=True)
 
             print()  # Newline after streaming
             full_response = "".join(collected_messages).strip()
             if not full_response:
                 raise ValueError("Empty response from streaming LLM")
+
+            # estimate completion tokens for streaming response
+            completion_tokens = self.count_tokens(completion_text)
+            logger.info(
+                f"Estimated completion tokens for streaming response: {completion_tokens}"
+            )
+            self.total_completion_tokens += completion_tokens
 
             return full_response
 
@@ -658,7 +709,9 @@ class LLM:
                 raise ValueError("Invalid or empty response from LLM")
 
             # Update token counts
-            self.update_token_count(response.usage.prompt_tokens)
+            self.update_token_count(
+                response.usage.prompt_tokens, response.usage.completion_tokens
+            )
 
             return response.choices[0].message
 
