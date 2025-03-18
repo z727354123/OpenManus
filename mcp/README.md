@@ -1,6 +1,6 @@
-# OpenManus-server 🤖
+# OpenManus-mcp 🤖
 
-This project provides a server based on [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) that exposes **OpenManus** tool functionalities as standardized APIs.
+Implement a server based on [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) that exposes **OpenManus** tool functionalities as standardized APIs and create a simple client to interact with the server.
 
 ## ✨ Features
 
@@ -42,7 +42,8 @@ uv pip install -r requirements.txt
 3. Install MCP dependencies:
 
 ```bash
-uv pip install -r openmanus_server/mcp_requirements.txt
+uv pip install -r mcp/mcp_requirements.txt
+playright install
 ```
 
 ## Demo display
@@ -50,7 +51,7 @@ https://github.com/user-attachments/assets/177b1f50-422f-4c2e-ab7d-1f3d7ff27679
 
 ## 📖 Usage
 
-### 1. Testing your server with Claude for Desktop 🖥️
+### 1. Testing the server with Claude for Desktop 🖥️
 
 > ⚠️ **Note**: Claude for Desktop is not yet available on Linux. Linux users can build an MCP client that connects to the server we just built.
 
@@ -75,9 +76,9 @@ In this case, we'll add our single Openmanus server like so:
             "command": "/ABSOLUTE/PATH/TO/PARENT/FOLDER/uv",
             "args": [
                 "--directory",
-                "/ABSOLUTE/PATH/TO/OpenManus/openmanus_server",
+                "/ABSOLUTE/PATH/TO/OpenManus/mcp/server",
                 "run",
-                "openmanus_server.py"
+                "server.py"
             ]
         }
     }
@@ -91,13 +92,13 @@ In this case, we'll add our single Openmanus server like so:
 #### Step 4: Understanding the Configuration 📝
 This tells Claude for Desktop:
 1. There's an MCP server named "openmanus" 🔌
-2. To launch it by running `uv --directory /ABSOLUTE/PATH/TO/OpenManus/openmanus_server run openmanus_server.py` 🚀
+2. To launch it by running `uv --directory /ABSOLUTE/PATH/TO/OpenManus/mcp/server run server.py` 🚀
 
 #### Step 5: Activation 🔄
 Save the file, and restart Claude for Desktop.
 
 #### Step 6: Verification ✨
-Let's make sure Claude for Desktop is picking up the six tools we've exposed in our `openmanus` server. You can do this by looking for the hammer icon ![hammer icon](./assets/claude-desktop-mcp-hammer-icon.svg)
+Let's make sure Claude for Desktop is picking up the five tools we've exposed in our `openmanus` server. You can do this by looking for the hammer icon ![hammer icon](./assets/claude-desktop-mcp-hammer-icon.svg)
 ![tools_in_claude](./assets/1.jpg)
 
 After clicking on the hammer icon, you should see tools listed:
@@ -111,12 +112,12 @@ After clicking on the hammer icon, you should see tools listed:
 
 ### 💻 2. Testing with simple Client Example
 
-Check out `openmanus_client.py` to test the openmanus server using the MCP client.
+Check out `client.py` to test the openmanus server using the MCP client.
 
 #### Demo display
 https://github.com/user-attachments/assets/aeacd93d-9bec-46d1-831b-20e898c7507b
 ```
-python openmanus_server/openmanus_client.py
+python mcp/client/client.py
 ```
 
 

@@ -1,17 +1,27 @@
-import ast
 import asyncio
+import json
 import os
 import sys
 from contextlib import AsyncExitStack
-from pathlib import Path
 from typing import Optional
 
-import tomli
 from colorama import Fore, init
-from dotenv import load_dotenv
+from openai import AsyncOpenAI
+
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-from openai import AsyncOpenAI
+
+
+# Add current directory to Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+sys.path.insert(0, current_dir)
+
+# Add root directory to Python path
+root_dir = os.path.dirname(parent_dir)
+sys.path.insert(0, root_dir)
+from app.config import config
 
 
 # Initialize colorama
@@ -19,48 +29,31 @@ def init_colorama():
     init(autoreset=True)
 
 
-# Load config
-def load_config():
-    config_path = Path(__file__).parent.parent / "config" / "config.toml"
-    try:
-        with open(config_path, "rb") as f:
-            return tomli.load(f)
-    except FileNotFoundError:
-        print(f"Error: config.toml not found at {config_path}")
-        sys.exit(1)
-    except tomli.TOMLDecodeError as e:
-        print(f"Error: Invalid TOML in config.toml: {e}")
-        sys.exit(1)
-
-
-# Load environment variables (as fallback)
-load_dotenv()
-
-
 class OpenManusClient:
     def __init__(self):
         # Load configuration
-        self.config = load_config()
+        # self.config = load_config()
 
         # Initialize session and client objects
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
 
         # Initialize AsyncOpenAI client with config
-        api_key = self.config["llm"]["api_key"] or os.getenv("OPENAI_API_KEY")
+        self.llm_config = config.llm["default"]
+        api_key = self.llm_config.api_key or os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError(
                 "OpenAI API key not found in config.toml or environment variables"
             )
 
         self.openai_client = AsyncOpenAI(
-            api_key=api_key, base_url=self.config["llm"]["base_url"]
+            api_key=api_key, base_url=self.llm_config.base_url
         )
 
     async def connect_to_server(self, server_script_path: str = None):
         """Connect to the openmanus MCP server"""
         # Use provided path or default from config
-        script_path = server_script_path or self.config["server"]["default_script"]
+        script_path = server_script_path
 
         server_params = StdioServerParameters(
             command="python", args=[script_path], env=None
@@ -134,7 +127,7 @@ class OpenManusClient:
         ]
         # Initial LLM API call
         response = await self.openai_client.chat.completions.create(
-            model=self.config["llm"]["model"],
+            model=self.llm_config.model,
             messages=messages,
             tools=available_tools,
             tool_choice="auto",
@@ -171,7 +164,7 @@ class OpenManusClient:
                 # Convert tool_args from string to dictionary if necessary
                 if isinstance(tool_args, str):
                     try:
-                        tool_args = ast.literal_eval(tool_args)
+                        tool_args = json.loads(tool_args)
                     except (ValueError, SyntaxError) as e:
                         print(f"Error converting tool_args to dict: {e}")
                         tool_args = {}
@@ -197,7 +190,7 @@ class OpenManusClient:
 
             # Get next response from LLM
             response = await self.openai_client.chat.completions.create(
-                model=self.config["llm"]["model"],
+                model=self.llm_config.model,
                 messages=messages,
                 tools=available_tools,
                 tool_choice="auto",
@@ -210,7 +203,7 @@ async def main():
     if len(sys.argv) > 1:
         server_script = sys.argv[1]
     else:
-        server_script = "./openmanus_server/openmanus_server.py"
+        server_script = "mcp/server/server.py"
 
     client = OpenManusClient()
     try:
