@@ -1,16 +1,16 @@
 import utils from '@/assets/js/utils'
 import { ReadAll } from '@/../wailsjs/go/main/App.js'
 
-// 临时缓存文件信息
+// Temporarily cache file information
 function cache(fileObj, $event) {
   console.log('cache fileObj start:', fileObj, $event.target, $event.dataTransfer)
   console.log('typeof fileObj:', Array.isArray(fileObj))
-  // 如果fileObj是数组,创建一个新的元素,追加到数组
-  // event.target.files和event.dataTransfer.files是JavaScript中与文件上传和拖放相关的事件属性。
-  // event.target.files：这个属性是在HTML的文件输入元素（<input type="file">）上使用时，
-  // 当用户选择文件并触发change事件时，可以通过event.target.files获取到用户选择的文件列表。
-  // event.dataTransfer.files：这个属性是在用户拖放文件到一个元素上时，
-  // 可以通过event.dataTransfer.files获取到拖放的文件列表。
+  // If fileObj is an array, create a new element and append to the array
+  // event.target.files and event.dataTransfer.files are event properties in JavaScript related to file upload and drag-and-drop.
+  // event.target.files: This property is used with HTML file input elements (<input type="file">),
+  // When the user selects a file and triggers the change event, event.target.files can be used to get the list of files selected by the user.
+  // event.dataTransfer.files: This property is used when the user drags and drops files onto an element,
+  // event.dataTransfer.files can be used to get the list of dropped files.
   console.log('$event:', $event, $event.type)
   let files
   if ($event.type == 'change') {
@@ -18,7 +18,7 @@ function cache(fileObj, $event) {
   } else if ($event.type == 'drop') {
     files = $event.dataTransfer.files
   } else {
-    console.error("无法识别的事件")
+    console.error("Unrecognized event")
     return
   }
   const file = files[0]
@@ -35,19 +35,19 @@ function cache(fileObj, $event) {
   fileInfo.fileName = file.name
   console.log('cache fileObj end:', fileInfo)
   if (Array.isArray(fileObj)) {
-    // 操作成功后追加到数组末尾
+    // Append to the end of the array after successful operation
     fileObj.push(fileInfo)
   }
   if ($event.type == 'change') {
-    // 解决选择相同的文件 不触发change事件的问题,放在最后清理
+    // Solve the problem of selecting the same file not triggering the change event, clean up at the end
     $event.target.value = null
   }
 }
 
-// 上传文件
+// Upload file
 async function upload(fileObj) {
-  console.log("准备开始上传文件！", fileObj, fileObj.file, fileObj.fileId)
-  // 当前地址
+  console.log("Ready to start uploading file!", fileObj, fileObj.file, fileObj.fileId)
+  // Current address
   if (utils.isNull(fileObj.file)) {
     if (utils.notNull(fileObj.fileId) && fileObj.remark != fileObj.remarkUpd) {
       let remark = null
@@ -58,7 +58,7 @@ async function upload(fileObj) {
     }
     return
   }
-  console.log("开始上传文件！", fileObj, fileObj.file, fileObj.fileId)
+  console.log("Start uploading file!", fileObj, fileObj.file, fileObj.fileId)
   const url = '/common/file/upload'
   const formData = new FormData()
   formData.append('file', fileObj.file)
@@ -73,21 +73,21 @@ async function upload(fileObj) {
     }
   })
   Object.assign(fileObj, data)
-  console.log("文件同步上传处理完毕", fileObj)
+  console.log("File upload completed", fileObj)
   return fileObj
 }
 
-// 更新文件备注
+// Update file remark
 async function updRemark(fileId, remarkUpd) {
   const param = {
     fileId: fileId,
     remark: remarkUpd
   }
   await utils.awaitPost('/common/file/updRemark', param)
-  console.log("更新文件备注成功")
+  console.log("File remark updated successfully")
 }
 
-// 批量上传文件
+// Batch upload files
 async function uploads(fileObjs) {
   if (utils.isEmpty(fileObjs)) {
     return
@@ -95,16 +95,16 @@ async function uploads(fileObjs) {
   for (let index in fileObjs) {
     console.log('fileObjs[index]:', fileObjs, index, fileObjs.length, fileObjs[index])
     await upload(fileObjs[index])
-    console.log("uploads index:", index, "上传文件完毕", fileObjs[index])
+    console.log("uploads index:", index, "File upload completed", fileObjs[index])
   }
 }
 
-// 上传文件(onChange时)
+// Upload file (onChange)
 function upOnChg(fileObj, $event) {
   const file = $event.target.files[0] || $event.dataTransfer.files[0]
-  // 当前地址
+  // Current address
   let URL = window.URL || window.webkitURL
-  // 转成 blob地址
+  // Convert to blob address
   fileObj.fileUrl = URL.createObjectURL(file)
   const url = '/common/file/upload'
   const formData = new FormData()
@@ -115,7 +115,7 @@ function upOnChg(fileObj, $event) {
       'Content-Type': 'multipart/form-data'
     }
   }).then((data) => {
-    console.log("文件上传结果:", data)
+    console.log("File upload result:", data)
     Object.assign(fileObj, data)
     fileObj.remarkUpd = data.remark
   })
@@ -147,7 +147,7 @@ function trans(javaFile, jsFile) {
   if (jsFile == undefined || jsFile == null) {
     return
   }
-  // 如果是数组，先清空数组
+  // If it is an array, clear the array first
   if (jsFile instanceof Array) {
     jsFile.splice(0, jsFile.length)
   } else {
@@ -157,7 +157,7 @@ function trans(javaFile, jsFile) {
   if (javaFile == undefined || javaFile == null) {
     return
   }
-  // 数组类型
+  // Array type
   if (jsFile instanceof Array) {
     for (let java of javaFile) {
       const js = {}
@@ -166,14 +166,14 @@ function trans(javaFile, jsFile) {
       jsFile.push(js)
     }
   } else {
-    // 对象类型
-    console.log("对象类型", jsFile instanceof Array)
+    // Object type
+    console.log("Object type", jsFile instanceof Array)
     javaFile.remarkUpd = javaFile.remark
     Object.assign(jsFile, javaFile)
   }
 }
 
-// 从Comps中收集fileId
+// Collect fileId from Comps
 function fileIds(fileList) {
   return fileList.map(comp => comp.fileId).join(',')
 }
@@ -183,24 +183,24 @@ function readAll(filePath) {
 }
 
 export default {
-  // onChange时缓存
+  // Cache on onChange
   cache,
-  // 上传文件
+  // Upload file
   upload,
-  // 上传文件
+  // Upload files
   uploads,
-  // 上传文件
+  // Upload file
   upOnChg,
-  // onChange时上传
+  // Upload on onChange
   upOnChg,
-  // 添加到组件列表
+  // Add to component list
   add,
-  // 从组件列表中删除组件
+  // Delete component from component list
   del,
-  // 文件Java对象与js对象转换
+  // Convert between Java object and js object
   trans,
-  // 从Comps中收集fileId
+  // Collect fileId from Comps
   fileIds,
-  // 读取文件
+  // Read file
   readAll
 }

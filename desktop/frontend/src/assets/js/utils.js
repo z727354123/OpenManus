@@ -3,13 +3,13 @@ import { ElMessage } from 'element-plus'
 import { Greet } from '@/../wailsjs/go/main/App.js'
 
 /** axios start */
-// 创建 axios 实例
+// Create axios instance
 const $axios = axios.create({
   baseURL: "api",
   timeout: 12000
 })
 
-// 请求拦截器
+// Request interceptor
 $axios.interceptors.request.use(
   (config) => {
     config.headers["token"] = ''
@@ -27,24 +27,24 @@ $axios.interceptors.request.use(
   }
 )
 
-// 响应拦截器
+// Response interceptor
 $axios.interceptors.response.use(
   (response) => {
     //  console.log("response:", response)
     if (response.status == 200) {
       return response.data
     } else {
-      pop("请求错误:" + response.status)
+      pop("Request error:" + response.status)
     }
   },
   (error) => {
     console.log("error:" + JSON.stringify(error))
     if (error.response == undefined || error.response == null) {
-      pop("未知请求错误!")
+      pop("Unknown request error!")
     } else if (error.response.status == 500) {
-      pop("请求后台服务异常,请稍后重试!")
+      pop("Backend service error, please try again later!")
     } else {
-      pop("请求错误:" + error)
+      pop("Request error:" + error)
     }
     return Promise.reject(error)
   }
@@ -75,7 +75,7 @@ async function awaitDel(url, param) {
 }
 
 /**
- * demo 调用 go 接口
+ * Demo call to go interface
  */
 function greet(name) {
   return Greet(name).then(resp => {
@@ -85,78 +85,78 @@ function greet(name) {
 }
 
 /**
- * 判断对象为空
+ * Check if object is null
  */
 function isNull(obj) {
   return obj == undefined || obj == null
 }
 
 /**
- * 判断对象非空
+ * Check if object is not null
  */
 function notNull(obj) {
   return obj != undefined && obj != null
 }
 
 /**
- * 判断空字符串
+ * Check if string is blank
  */
 function isBlank(str) {
   return str == undefined || str == null || /^s*$/.test(str)
 }
 
 /**
- * 判断不为空字符串
+ * Check if string is not blank
  */
 function notBlank(str) {
   return !isBlank(str)
 }
 
 /**
-* 判断数组为空
-*/
+ * Check if array is empty
+ */
 function isEmpty(arr) {
   return arr == undefined || arr == null || (arr instanceof Array && arr.length == 0)
 }
 
 /**
- * 判断数组非空
+ * Check if array is not empty
  */
 function notEmpty(arr) {
   return arr != undefined && arr != null && arr instanceof Array && arr.length > 0
 }
 
 /**
- * 判断对象为true
+ * Check if object is true
  */
 function isTrue(obj) {
   return obj == true || obj == 'true'
 }
 
 /**
- * 判断对象为false
+ * Check if object is false
  */
 function isFalse(obj) {
   return !isTrue(obj)
 }
 
-/** 获取字符串中某字符的个数
-* @param {string} str - 要搜索的字符串
-* @param {string} char - 要查找的字符
-* @returns {number} - 字符在字符串中出现的次数
+/** Get the count of a character in a string
+* @param {string} str - The string to search
+* @param {string} char - The character to find
+* @returns {number} - The count of the character in the string
 */
 function getCharCount(str, char) {
-  // 使用g表示整个字符串都要匹配
+  // Use g to match the entire string
   var regex = new RegExp(char, 'g')
-  // match方法可在字符串内检索指定的值，或找到一个或多个正则表达式的匹配
+  // match method can search for specified values in a string or find one or more matches of a regular expression
   var result = str.match(regex)
   var count = !result ? 0 : result.length
   return count
 }
 
 /**
- * 日期格式化
- * 默认格式为yyyy-MM-dd HH:mm:ss
+ * Date format
+ * Default format is yyyy-MM-dd HH:mm:ss
  */
 function dateFormat(date, format) {
   if (date == undefined || date == null || date == '') {
@@ -187,27 +187,27 @@ function dateFormat(date, format) {
 }
 
 /**
- * 遍历对象中的日期,并进行格式化
+ * Traverse and format date properties in object
  */
 function fomateDateProperty(obj) {
   for (let i in obj) {
-    //遍历对象中的属性
+    // Traverse properties in object
     if (obj[i] == null) {
       continue
     } else if (obj[i] instanceof Date) {
-      // 格式化为yyyy-MM-dd HH:mm:ss
+      // Format to yyyy-MM-dd HH:mm:ss
       obj[i] = dateFormat(obj[i])
     } else if (obj[i].constructor === Object) {
-      //如果发现该属性的值还是一个对象，再判空后进行迭代调用
+      // If the property value is still an object, check if it's empty and then iterate
       if (Object.keys(obj[i]).length > 0) {
-        //判断对象上是否存在属性，如果为空对象则删除
+        // Check if the object has properties, delete if it's an empty object
         fomateDateProperty(obj[i])
       }
     } else if (obj[i].constructor === Array) {
-      //对象值如果是数组，判断是否为空数组后进入数据遍历判空逻辑
+      // If the object value is an array, check if it's empty and then iterate
       if (obj[i].length > 0) {
         for (let j = 0; j < obj[i].length; j++) {
-          //遍历数组
+          // Traverse array
           fomateDateProperty(obj[i][j])
         }
       }
@@ -216,34 +216,34 @@ function fomateDateProperty(obj) {
 }
 
 
-// 遍历删除对象中的空值属性
+// Traverse and delete null properties in object
 function delNullProperty(obj) {
   for (let i in obj) {
-    //遍历对象中的属性
+    // Traverse properties in object
     if (obj[i] === undefined || obj[i] === null || obj[i] === "") {
-      //首先除去常规空数据，用delete关键字
+      // First remove regular empty data using delete keyword
       delete obj[i]
     } else if (obj[i].constructor === Object) {
-      //如果发现该属性的值还是一个对象，再判空后进行迭代调用
+      // If the property value is still an object, check if it's empty and then iterate
       if (Object.keys(obj[i]).length === 0) delete obj[i]
-      //判断对象上是否存在属性，如果为空对象则删除
+      // Check if the object has properties, delete if it's an empty object
       delNullProperty(obj[i])
     } else if (obj[i].constructor === Array) {
-      //对象值如果是数组，判断是否为空数组后进入数据遍历判空逻辑
+      // If the object value is an array, check if it's empty and then iterate
       if (obj[i].length === 0) {
-        //如果数组为空则删除
+        // If the array is empty, delete it
         delete obj[i]
       } else {
         for (let index = 0; index < obj[i].length; index++) {
-          //遍历数组
+          // Traverse array
           if (obj[i][index] === undefined || obj[i][index] === null || obj[i][index] === "" || JSON.stringify(obj[i][index]) === "{}") {
             obj[i].splice(index, 1)
-            //如果数组值为以上空值则修改数组长度，移除空值下标后续值依次提前
+            // If the array value is one of the above empty values, modify the array length, move subsequent values forward
             index--
-            //由于数组当前下标内容已经被替换成下一个值，所以计数器需要自减以抵消之后的自增
+            // Since the current index content has been replaced by the next value, the counter needs to decrement to offset the subsequent increment
           }
           if (obj[i].constructor === Object) {
-            //如果发现数组值中有对象，则再次进入迭代
+            // If an object is found in the array value, iterate again
             delNullProperty(obj[i])
           }
         }
@@ -253,8 +253,8 @@ function delNullProperty(obj) {
 }
 
 /**
-  * 弹出消息框
-  * @param msg 消息内容
+  * Show message box
+  * @param msg Message content
   * @param type
   */
 function pop(msg, type) {
@@ -263,12 +263,12 @@ function pop(msg, type) {
 
 function popNoData(data) {
   if (data == undefined || data == null || (data instanceof Array && data.length == 0)) {
-    ElMessage("暂无数据!")
+    ElMessage("No data!")
   }
 }
 
 /**
- * 当前时间字符串
+ * Current datetime string
  */
 function nowDatetimeStr() {
   const date = new Date()
@@ -277,7 +277,7 @@ function nowDatetimeStr() {
 }
 
 /**
- * 构建分页
+ * Build pagination
  */
 function buildPage(source, target) {
   target.pageNum = source.pageNum
@@ -287,7 +287,7 @@ function buildPage(source, target) {
   copyArray(source.list, target.list)
 }
 /**
- * 清空数组
+ * Clear array
  */
 function clearArray(arr) {
   if (arr == undefined || arr == null || arr.length == 0) {
@@ -296,7 +296,7 @@ function clearArray(arr) {
   arr.splice(0, arr.length)
 }
 /**
- * 清空属性
+ * Clear properties
  */
 function clearProps(obj) {
   if (obj == undefined || obj == null) {
@@ -308,7 +308,7 @@ function clearProps(obj) {
 }
 
 /**
- * 复制对象属性
+ * Copy object properties
  */
 function copyProps(source, target) {
   if (target == undefined || target == null) {
@@ -322,13 +322,13 @@ function copyProps(source, target) {
   }
 }
 /**
- * 复制数组
+ * Copy array
  */
 function copyArray(source, target) {
   if (target == undefined || target == null) {
     return
   }
-  // 先清空数组
+  // Clear array first
   if (target.length > 0) {
     target.splice(0, target.length)
     /* while (target.length > 0) {
@@ -344,7 +344,7 @@ function copyArray(source, target) {
 }
 
 /**
- * 发生变更的属性
+ * Changed properties
  */
 function dfProps(origin, target) {
   if (origin == undefined || origin == null || target == undefined || target == null) {
@@ -361,7 +361,7 @@ function dfProps(origin, target) {
 
 
 /**
- * 是否存在不同属性
+ * Check if there are different properties
  */
 function hasDfProps(origin, target) {
   const df = dfProps(origin, target)
@@ -374,7 +374,7 @@ function hasDfProps(origin, target) {
 }
 
 /**
- * 所有字段为空
+ * All fields are empty
  */
 function isAllPropsNull(target) {
   if (target == undefined || target == null) {
@@ -425,19 +425,19 @@ function colorByLabel(label) {
 
 function descByLabel(label) {
   if ('ADD' == label) {
-    return '新增'
+    return 'Add'
   }
   if ('UPD' == label) {
-    return '更新'
+    return 'Update'
   }
   if ('DEL' == label) {
-    return '删除'
+    return 'Delete'
   }
   return label
 }
 
 /**
- * 重试调用
+ * Retry call
  */
 function retry(method) {
   const params = []
@@ -450,7 +450,7 @@ function retry(method) {
 }
 
 /**
- * 根据opts编码匹配中文
+ * Match Chinese label from opts encoding
  */
 function resolveLabelFromOpts(keyOrVal, opts) {
   if (isEmpty(opts)) {
@@ -464,7 +464,7 @@ function resolveLabelFromOpts(keyOrVal, opts) {
   return keyOrVal
 }
 
-/** 下划线转首字母小写驼峰 */
+/** Convert underscore to camel case with first letter lowercase */
 function underScoreToCamelCase(underscore) {
   if (isNull(underscore) || !underscore.includes('_')) {
     return underscore
@@ -480,7 +480,7 @@ function underScoreToCamelCase(underscore) {
   return words.join("")
 }
 
-/** 防抖函数 */
+/** Debounce function */
 function debounce(func, delay) {
   let timer
   return function () {
@@ -494,6 +494,9 @@ function debounce(func, delay) {
   }
 }
 
+/**
+ * Convert string to lines
+ */
 function stringToLines(str) {
   if (str == undefined || str == null) {
     return []
@@ -503,42 +506,42 @@ function stringToLines(str) {
 
 export default {
   /**
-   * http请求 GET请求
+   * HTTP request GET
    */
   get,
 
   /**
-   * http请求, 异步等待 GET请求
+   * HTTP request, async await GET
    */
   awaitGet,
 
   /**
-   * http请求 POST请求
+   * HTTP request POST
    */
   post,
 
   /**
-   * http请求, 异步等待 POST请求
+   * HTTP request, async await POST
    */
   awaitPost,
 
   /**
-   * http请求 DELETE请求
+   * HTTP request DELETE
    */
   del,
 
   /**
-   * http请求, 异步等待 DELETE请求
+   * HTTP request, async await DELETE
    */
   awaitDel,
 
   /**
-   * 判断对象为空
+   * Check if object is null
    */
   isNull,
 
   /**
-   * 判断对象非空
+   * Check if object is not null
    */
   notNull,
 
@@ -547,12 +550,12 @@ export default {
   notBlank,
 
   /**
-   * 判断数组为空
+   * Check if array is empty
    */
   isEmpty,
 
   /**
-   * 判断数组非空
+   * Check if array is not empty
    */
   notEmpty,
 
@@ -563,64 +566,63 @@ export default {
   getCharCount,
 
   /**
-   * 弹出消息提示
+   * Show message popup
    */
   pop,
 
   /**
-   * 判定数据是否为空, 如果为空则提示暂无数据
+   * Check if data is empty, if empty show "No data" message
    */
   popNoData,
 
   /**
-   * 遍历删除对象中的空值属性
+   * Traverse and delete null properties in object
    */
   delNullProperty,
 
   /**
-   * 
-   * 当前时间字符串
+   * Current datetime string
    */
   nowDatetimeStr,
 
   /**
-   * 构建分页
+   * Build pagination
    */
   buildPage,
 
   /**
-   * 清空数组
+   * Clear array
    */
   clearArray,
 
   /**
-   * 清空属性
+   * Clear properties
    */
   clearProps,
 
   /**
-   * 复制对象属性
+   * Copy object properties
    */
   copyProps,
 
   /**
-   * 复制数组
+   * Copy array
    */
   copyArray,
 
   /**
-   * 日期格式化
-   * 默认格式为yyyy-MM-dd HH:mm:ss
+   * Date format
+   * Default format is yyyy-MM-dd HH:mm:ss
    */
   dateFormat,
 
   /**
-   * 遍历对象中的日期,并进行格式化
+   * Traverse and format date properties in object
    */
   fomateDateProperty,
 
   /**
-   * 发生变更的属性
+   * Changed properties
    */
   dfProps,
 
@@ -633,7 +635,7 @@ export default {
   descByLabel,
 
   /**
-   * 重试调用
+   * Retry call
    */
   retry,
 

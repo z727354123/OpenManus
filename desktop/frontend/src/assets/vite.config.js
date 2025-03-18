@@ -37,16 +37,16 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1500,
-    // 分解块，将大块分解成更小的块
+    // Split chunks, break large chunks into smaller ones
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // 让每个插件都打包成独立的文件
+            // Let each plugin be packaged into an independent file
             return id.toString().split('node_modules/')[1].split('/')[0].toString();
           }
         },
-        // 单位b, 合并较小模块
+        // Unit b, merge smaller modules
         experimentalMinChunkSize: 10 * 1024,
       }
     },
