@@ -15,10 +15,10 @@
         </div>
       </template>
 
-      <!-- 展示模块-无数据 -->
+      <!-- No Data -->
       <div class="no-data" v-show="baseNoData">{{ t('noData') }}</div>
 
-      <!-- 展示模块-有数据 -->
+      <!-- Show Data -->
       <div class="card-row-wrap" v-show="baseShow">
         <div class="card-row-item">
           <el-text>model:</el-text>
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <!-- 编辑模块 -->
+      <!-- Edit Module -->
       <el-form ref="ruleFormRef" :model="llmConfigUpd" status-icon :rules="rules" v-show="baseEdit">
         <div class="card-row-wrap">
           <div class="card-row-item">
@@ -124,15 +124,17 @@ function toEdit(model) {
 }
 
 const baseShow = computed(() => {
-  return viewModel.base == 'show' || viewModel.base == 'showMore'
+  return viewModel.base == 'show'
 })
 
 const baseEdit = computed(() => {
   return viewModel.base == 'edit'
 })
 
+const readConfigSuccess = ref(false)
+
 const baseNoData = computed(() => {
-  return baseShow && llmConfig.model == null
+  return baseShow && !readConfigSuccess.value
 })
 
 const llmConfig = reactive({
@@ -153,12 +155,19 @@ const llmConfigUpd = reactive({
 
 function clearCache() {
   config.$reset()
+  utils.pop(t('clearCacheSuccess'))
 }
 
 onMounted(() => {
   // 读取配置文件config/config.toml
   files.readAll("@/../../config/config.toml").then((fileContent) => {
     console.log("config/config.toml: ", fileContent)
+    if (utils.notBlank(fileContent)) {
+      readConfigSuccess.value = true
+    } else {
+      utils.pop(t('readConfigFailed'))
+      return
+    }
     const lines = utils.stringToLines(fileContent)
 
     // 读取[llm]
@@ -190,7 +199,7 @@ onMounted(() => {
 const submitForm = async () => {
   try {
     await ruleFormRef.value.validate();
-    if (!utils.hasDfProps(designSchemeDtl, designSchemeUpd)) {
+    if (!utils.hasDfProps(llmConfig, llmConfigUpd)) {
       ElMessage.success('未发生更改!');
       toShow('base')
       return

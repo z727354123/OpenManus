@@ -73,6 +73,7 @@ const codeValidator = (rule, value, callback) => {
     callback()
   } else if (!codeReg.test(value)) {
     callback(new Error('Invalid code format'))
+    callback(new Error('Invalid code format'))
   } else {
     callback()
   }
@@ -92,7 +93,7 @@ function validator() {
   console.log("arguments:", arguments)
   if (arguments.length <= 1) {
     const type = arguments[0]
-    // Generic validators
+    // Default validation logic, no special characters
     if (utils.isBlank(type)) {
       return commonValidator
     } else if (type == 'notBlank') {
@@ -124,7 +125,7 @@ function validator() {
         callback(new Error('Invalid code format'))
         break
       } else if (typeStr == 'int' && Number.isInteger(value)) {
-        callback(new Error('In'))
+        callback(new Error('Please enter an integer'))
         break
       }
     }

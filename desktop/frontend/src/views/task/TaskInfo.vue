@@ -81,7 +81,7 @@ const viewModel = reactive({
 })
 
 const baseShow = computed(() => {
-  return viewModel.base == 'show' || viewModel.base == 'showMore'
+  return viewModel.base == 'show'
 })
 
 const baseNoData = computed(() => {

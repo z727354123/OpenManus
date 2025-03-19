@@ -34,6 +34,7 @@ export default {
   promptInputPlaceHolder: "请输入任务提示词",
   promptInput: "提示词输入",
   promptInputKw: "提示词关键字",
+  clearCache: "清理缓存",
   clearCacheSuccess: "清理缓存成功",
   openManusAgiTips: "以上内容由OpenManus生成, 仅供参考和借鉴",
   taskStatus: {
@@ -44,4 +45,8 @@ export default {
     terminated: "终止",
   },
   newTask: "新任务",
+  readConfigSuccess: "读取配置成功",
+  readConfigFailed: "读取配置失败",
+  baseConfig: "基础设置",
+  serverConfig: "服务器配置",
 }

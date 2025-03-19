@@ -5,10 +5,12 @@ import utils from '@/assets/js/utils'
 function cache(fileObj, $event) {
   console.log('Caching fileObj start:', fileObj, $event.target, $event.dataTransfer)
   console.log('typeof fileObj:', Array.isArray(fileObj))
-  // If fileObj is an array, create new element and append to array
-  // event.target.files and event.dataTransfer.files are properties related to file upload and drag-drop events
-  // event.target.files: Used with <input type="file"> elements, contains list of files selected via change event
-  // event.dataTransfer.files: Contains list of files dropped onto an element via drag-drop event
+  // If fileObj is an array, create a new element and append to the array
+  // event.target.files and event.dataTransfer.files are event properties in JavaScript related to file upload and drag-and-drop.
+  // event.target.files: This property is used with HTML file input elements (<input type="file">),
+  // When the user selects a file and triggers the change event, event.target.files can be used to get the list of files selected by the user.
+  // event.dataTransfer.files: This property is used when the user drags and drops files onto an element,
+  // event.dataTransfer.files can be used to get the list of dropped files.
   console.log('$event:', $event, $event.type)
   let files
   if ($event.type == 'change') {
@@ -33,11 +35,11 @@ function cache(fileObj, $event) {
   fileInfo.fileName = file.name
   console.log('Caching fileObj completed:', fileInfo)
   if (Array.isArray(fileObj)) {
-    // Append to array after successful operation
+    // Append to the end of the array after successful operation
     fileObj.push(fileInfo)
   }
   if ($event.type == 'change') {
-    // Clear input to allow reselecting same file
+    // Solve the problem of selecting the same file not triggering the change event, clean up at the end
     $event.target.value = null
   }
 }
@@ -93,7 +95,7 @@ async function uploads(fileObjs) {
   for (let index in fileObjs) {
     console.log('Processing file object:', fileObjs, index, fileObjs.length, fileObjs[index])
     await upload(fileObjs[index])
-    console.log("Upload completed for index:", index, fileObjs[index])
+    console.log("uploads index:", index, "File upload completed", fileObjs[index])
   }
 }
 
@@ -185,21 +187,23 @@ function readAll(filePath) {
 }
 
 export default {
-  // Cache on change event
+  // Cache on onChange
   cache,
-  // Single file upload
+  // Upload file
   upload,
-  // Batch file upload
+  // Upload files
   uploads,
-  // Immediate upload on change
+  // Upload file
   upOnChg,
-  // Add component
+  // Upload on onChange
+  upOnChg,
+  // Add to component list
   add,
-  // Remove component
+  // Delete component from component list
   del,
-  // Object conversion
+  // Convert between Java object and js object
   trans,
-  // Collect file IDs
+  // Collect fileId from Comps
   fileIds,
   // Read file
   readAll

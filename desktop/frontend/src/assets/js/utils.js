@@ -41,9 +41,11 @@ $axios.interceptors.response.use(
     console.log("error:" + JSON.stringify(error))
     if (error.response == undefined || error.response == null) {
       pop("Unknown request error!")
+      pop("Unknown request error!")
     } else if (error.response.status == 500) {
       pop("Unable to communicate with backend, please retry later!")
     } else {
+      pop("Request error:" + error)
       pop("Request error:" + error)
     }
     return Promise.reject(error)
@@ -85,21 +87,21 @@ function greet(name) {
 }
 
 /**
- * Identify whether the object is null
+ * Check if object is null
  */
 function isNull(obj) {
   return obj == undefined || obj == null
 }
 
 /**
- * Identify whether the object is not null
+ * Check if object is not null
  */
 function notNull(obj) {
   return obj != undefined && obj != null
 }
 
 /**
- * Identify an empty string
+ * Check if string is blank
  */
 function isBlank(str) {
   return str == undefined || str == null || /^s*$/.test(str)
@@ -113,28 +115,28 @@ function notBlank(str) {
 }
 
 /**
-* Identify an empty array
-*/
+ * Check if array is empty
+ */
 function isEmpty(arr) {
   return arr == undefined || arr == null || (arr instanceof Array && arr.length == 0)
 }
 
 /**
- * Identify a non-empty array
+ * Check if array is not empty
  */
 function notEmpty(arr) {
   return arr != undefined && arr != null && arr instanceof Array && arr.length > 0
 }
 
 /**
- * Identify true
+ * Check if object is true
  */
 function isTrue(obj) {
   return obj == true || obj == 'true'
 }
 
 /**
- * Identify false
+ * Check if object is false
  */
 function isFalse(obj) {
   return !isTrue(obj)
@@ -157,7 +159,7 @@ function getCharCount(str, char) {
 /**
  * Format date with specified pattern
  * @param {Date|string} date - Date object or date string
- * @param {string} format - Target format pattern
+ * @param {string} format - Target format pattern; by default, `yyyy-MM-dd HH:mm:ss`
  * @returns {string} - Formatted date string
  */
 function dateFormat(date, format) {
@@ -451,13 +453,13 @@ function colorByLabel(label) {
 
 function descByLabel(label) {
   if ('ADD' == label) {
-    return '新增'
+    return 'Add'
   }
   if ('UPD' == label) {
-    return '更新'
+    return 'Update'
   }
   if ('DEL' == label) {
-    return '删除'
+    return 'Delete'
   }
   return label
 }
@@ -534,6 +536,9 @@ function debounce(func, delay) {
   }
 }
 
+/**
+ * Convert string to lines
+ */
 function stringToLines(str) {
   if (str == undefined || str == null) {
     return []

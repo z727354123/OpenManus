@@ -37,18 +37,18 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1500,
-    // Split into chunks
+    // Split chunks, break large chunks into smaller ones
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // Pack each package into a separate chunk
+            // Let each plugin be packaged into an independent file
             return id.toString().split('node_modules/')[1].split('/')[0].toString()
           }
-        },
-        // In bytes, merge small modules
-        experimentalMinChunkSize: 10 * 1024,
+          // Unit b, merge smaller modules
+          experimentalMinChunkSize: 10 * 1024
+        }
       }
-    },
-  }
+    }
+  },
 })
