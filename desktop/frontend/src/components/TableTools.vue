@@ -6,22 +6,16 @@
           <Refresh />
         </el-icon>
       </el-button>
-      <el-button type="primary" @click="toAddPage" style="vertical-align: middle;">
-        <el-icon :size="20" class="pr-4">
-          <Plus />
-        </el-icon>
-        新增
-      </el-button>
       <el-button type="danger" class="ml-10" @click="delSelected" :disabled="selectedRows.length == 0">
         <el-icon :size="20" class="pr-4">
           <Delete />
         </el-icon>
-        删除
+        {{ t('delete') }}
       </el-button>
     </div>
     <div v-show="advSearch">
-      <el-button @click="resetSearch">重置</el-button>
-      <el-button type="primary" @click="search">查询</el-button>
+      <el-button @click="resetSearch"> {{ t('reset') }}</el-button>
+      <el-button type="primary" @click="search"> {{ t('search') }}</el-button>
     </div>
     <div>
       <el-input v-model="searchForm.kw" @input="baseSearch" clearable v-show="!advSearch" class="mr-8" />
@@ -54,7 +48,9 @@
 
 <script setup>
 import { Refresh, Search, Grid, Plus, Delete } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const props = defineProps({
   advSearch: {
     default: false
@@ -69,9 +65,6 @@ const props = defineProps({
   },
   selectedRows: {
     default: []
-  },
-  addable: {
-    default: false
   }
 })
 
@@ -82,7 +75,6 @@ const emits = defineEmits([
   'checkTableColumn',
   'delSelected',
   'resetSearch',
-  'toAddPage',
 ])
 
 const baseSearch = () => {
@@ -111,9 +103,6 @@ const resetSearch = () => {
   emits('resetSearch')
 }
 
-const toAddPage = () => {
-  emits('toAddPage')
-}
 </script>
 
 <style scoped>

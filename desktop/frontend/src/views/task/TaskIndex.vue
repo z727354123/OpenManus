@@ -1,14 +1,17 @@
-<template :lang="i18n.locale">
+<template>
   <div class="main-content fc">
-    <el-scrollbar ref="scrollRef" style="width: 100%;">
+    <el-scrollbar ref="scrollRef">
       <div class="output-area" v-show="taskInfo.taskId != null">
 
         <div class="dialog-user">
           <div class="blank"></div>
           <div class="content">
-            <el-text class="title">
-              {{ t('user') }}
-            </el-text>
+            <div class="title fxc">
+              <img src="@/assets/img/user.png" class="user-img" />
+              <el-text>
+                {{ t('user') }}
+              </el-text>
+            </div>
             <el-text class="prompt">
               {{ taskInfo.prompt }}
             </el-text>
@@ -26,7 +29,7 @@
                   <el-card>
                     <div>
                       <h4 class="color-label mr-10" :class="utils.colorByLabel('step')">
-                        STEP
+                        {{ t('step') }}
                       </h4>
                       <el-text>{{ step.result }}</el-text>
                     </div>
@@ -47,34 +50,47 @@
             </div>
           </div>
         </div>
-        <div>
-          <el-text class="pr-10">任务状态:</el-text>
-          <el-text>{{ taskInfo.status }}</el-text>
-        </div>
-
       </div>
     </el-scrollbar>
 
     <div class="input-area">
+
+      <div class="input-tools">
+        <div class="new-task" v-show="!newTaskFlag">
+          <el-button round @click="startNewTask">
+            <el-icon :size="16">
+              <CirclePlus />
+            </el-icon>
+            <span> {{ t('newTask') }} </span>
+          </el-button>
+        </div>
+
+        <div class="task-status" v-show="taskInfo.taskId != null">
+          <el-text class="pr-10">{{ t('taskStatus.name') }}:</el-text>
+          <el-text>{{ taskInfo.status }}</el-text>
+        </div>
+      </div>
+
       <div class="input-box">
         <el-icon @click="uploadFile" class="add-file-area" :size="24">
           <FolderAdd />
         </el-icon>
         <el-input ref="promptEle" type="textarea" v-model="prompt" class="input-style" style="border: none;"
-          :autosize="{ minRows: 1, maxRows: 4 }" autofocus placeholder="请输入指令" @keydown.enter="handleInputEnter" />
+          :autosize="{ minRows: 1, maxRows: 4 }" autofocus :placeholder="t('promptInputPlaceHolder')"
+          @keydown.enter="handleInputEnter" />
 
         <el-link class="send-area">
-          <el-icon @click="sendPrompt" :size="24" v-show="!loading">
+          <el-icon @click="sendPrompt" :size="24" v-show="!loading && taskInfo.status != 'running'">
             <Promotion />
           </el-icon>
-          <el-icon @click="stop" :size="24" v-show="loading">
+          <el-icon @click="stop" :size="24" v-show="loading || taskInfo.status == 'running'">
             <CircleClose />
           </el-icon>
         </el-link>
       </div>
 
       <div>
-        <el-text class="tips">以上内容由OpenManus生成, 仅供参考和借鉴</el-text>
+        <el-text class="tips">{{ t('openManusAgiTips') }}</el-text>
       </div>
     </div>
   </div>
@@ -83,10 +99,9 @@
 
 <script setup>
 import { ref, reactive, inject, computed, onMounted, onUnmounted } from 'vue'
-import { FolderAdd, Promotion, Eleme, CircleClose } from '@element-plus/icons-vue'
+import { FolderAdd, Promotion, CirclePlus, CircleClose } from '@element-plus/icons-vue'
 import { useConfig } from '@/store/config'
 import { useI18n } from 'vue-i18n'
-import i18n from '@/locales/i18n'
 
 const utils = inject('utils')
 const config = useConfig()
@@ -98,7 +113,12 @@ const promptEle = ref(null)
 const eventTypes = ['think', 'tool', 'act', 'log', 'run', 'message']
 const eventSource = ref(null)
 
+const newTaskFlag = ref(false)
+
 const taskInfo = computed(() => {
+  if (newTaskFlag.value) {
+    return {}
+  }
   return config.getCurrTask()
 })
 
@@ -248,15 +268,20 @@ const scrollToBottom = () => {
 
 // 发送提示词
 function sendPrompt() {
-  // 关闭之前的连接
-  if (eventSource.value != null) {
-    eventSource.value.close()
-  }
-
   if (utils.isBlank(prompt.value)) {
     utils.pop("Please enter a valid prompt", "error")
     promptEle.value.focus()
     return
+  }
+
+  if (taskInfo.value.status == "running") {
+    utils.pop("请先终止当前任务", "error")
+    return
+  }
+
+  // 关闭之前的连接
+  if (eventSource.value != null) {
+    eventSource.value.close()
   }
 
   utils.post('http://localhost:5172/tasks', { prompt: prompt.value }).then(data => {
@@ -272,6 +297,7 @@ function sendPrompt() {
     }
     // 保存历史记录
     config.addTaskHistory(newTask)
+    newTaskFlag.value = false
     // 发送完成后清空输入框
     prompt.value = ''
     // 建立新的EventSource连接
@@ -286,10 +312,25 @@ function sendPrompt() {
 function stop() {
   console.log("stop")
   loading.value = false
-  eventSource.value.close()
+  console.log("eventSource:", eventSource.value, "taskInfo:", taskInfo.value)
+  if (eventSource.value != null) {
+    eventSource.value.close()
+  }
+
   taskInfo.value.status = "terminated"
   utils.pop("用户终止任务", "error")
 }
+
+function startNewTask() {
+  console.log("startNewTask:", taskInfo.value)
+  if (taskInfo.value.status == "running") {
+    utils.pop("请先终止当前任务", "error")
+    return
+  }
+  newTaskFlag.value = true
+  prompt.value = ''
+}
+
 
 </script>
 
@@ -331,14 +372,18 @@ function stop() {
   margin: 0px 16px 6px 16px;
 }
 
+.dialog-user .user-img {
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
+  margin-bottom: 4px;
+}
 
 .dialog {
   width: 100%;
 }
 
-
 .dialog-ai {
-  margin-bottom: 16px;
   background-color: var(--el-fg-color);
   border-radius: 12px;
 }
@@ -351,15 +396,32 @@ function stop() {
 .input-area {
   flex-grow: 0;
   width: 100%;
-  max-height: 180px;
+  max-height: 200px;
   padding-left: 80px;
   padding-right: 80px;
   padding-top: 12px;
-  padding-bottom: 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.input-area .input-tools {
+  width: 100%;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-area .input-tools .new-task {
+  position: relative;
+  left: -80px;
+}
+
+.input-area .input-tools .task-status {
+  position: relative;
+  right: -80px;
 }
 
 .input-box {
@@ -397,7 +459,7 @@ function stop() {
 .tips {
   color: var(--el-text-color-secondary);
   font-size: 12px;
-  padding-top: 10px;
+  padding-top: 12px;
 }
 
 .sub-step-time {

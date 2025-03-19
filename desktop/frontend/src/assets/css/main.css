@@ -1,6 +1,6 @@
 :root {
   --el-menu-base-level-padding: 10px !important;
-  /** 子菜单缩进 */
+  /** Indents for submenu items */
   --el-menu-level-padding: 20px !important;
 }
 
@@ -13,7 +13,7 @@
   margin: 0;
   padding: 0;
   font-family: inherit;
-  /* 让broder不占用宽度 */
+  /* Ensure borders don't take up space */
   box-sizing: border-box;
 }
 
@@ -34,7 +34,7 @@ body {
   padding: 0;
   line-height: 1.5;
   touch-action: none;
-  /* 不使用原生滚动条 */
+  /* Don't use native scroll bars */
   overflow: hidden;
 }
 
@@ -69,7 +69,7 @@ a {
   text-decoration: none;
 }
 
-/* 防止双击选中 */
+/* Avoid double-click selection */
 a.no-select {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -114,12 +114,12 @@ fieldset {
   text-align: right;
 }
 
-/** 文本缩进默认值,2个字符 */
+/** Default indent for text, 2 characters */
 .text-indent {
   text-indent: 2em;
 }
 
-/** \n 换行 */
+/** Multiline text preset */
 .multiline-text {
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -130,7 +130,7 @@ input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
   -webkit-text-fill-color: var(--el-text-color);
-  /* transparent 背景透明 */
+  /* transparent background */
   -webkit-box-shadow: 0 0 0px 1000px transparent inset;
   transition: background-color 5000s ease-in-out 0s;
 }
@@ -151,32 +151,32 @@ input::selection,
 input:-webkit-autofill::selection,
 input:-webkit-autofill:hover::selection,
 input:-webkit-autofill:focus::selection {
-  /* 设置自动填充时选中文本的样式 */
-  /* 文字颜色 */
+  /* Style for autocompleted text  */
+  /* Color for text */
   -webkit-text-fill-color: rgb(255, 255, 255);
-  /* 背景颜色 */
+  /* Color for background */
   background-color: rgb(0, 0, 255);
   -webkit-box-shadow: 0 0 0px 1000px rgb(255, 255, 255) inset;
   box-shadow: 0 0 0px 1000px rgb(255, 255, 255) inset;
-  /* 防止背景颜色变化 */
+  /* Avoid color changes for background */
   transition: background-color 5000s ease-in-out 0s;
 }
 
 img {
-  /* 添加渐变效果 */
+  /* Add transition */
   transition: opacity 0.4s ease;
-  /* 默认透明度为1（不透明） */
+  /* No transparency by default */
   opacity: 1;
-  /* 添加圆角 */
+  /* Add rounded corners */
   border-radius: 6px;
 }
 
 img.edit:hover {
-  /* 鼠标悬停时透明度降为0.5 */
+  /* Degrade transparency by 0.5 on hover */
   opacity: 0.5;
 }
 
-/* 渐变边框 */
+/* Gradient border */
 .gradient-border {
   border: 12px solid transparent;
   border-radius: 6px;
@@ -187,13 +187,16 @@ img.edit:hover {
 
 .main-content {
   width: 100%;
-  height: calc(100vh - 44px);
+  /** 44 + 16 + 16 */
+  height: calc(100vh - 76px);
   padding: 0px 16px;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 /** Element Plus Start */
 
-/* 移除全局 el-link 组件的下划线 */
+/* Remove underlines globally for el-link */
 .el-link::after {
   display: none;
 }
@@ -229,7 +232,7 @@ img.edit:hover {
 }
 
 .el-textarea__inner::-webkit-scrollbar {
-  /* 隐藏滚动条 */
+  /* Hide scrollbar */
   width: 0 !important;
 }
 
@@ -250,14 +253,14 @@ button>span.el-button__text--expand {
   --el-font-size-base: 11px;
 }
 
-/** 菜单样式,菜单组件部分样式必须定义在主类中,
+/** Menu styles - Some of the styles are intended to be defined in main classes. */
 
-/* 覆盖el-menu的默认高度 */
+/* Override the default height for el-menu */
 .el-menu--horizontal {
   --el-menu-horizontal-height: 36px;
 }
 
-/* 弹出菜单样式 */
+/* Styles for pop-up menus */
 .el-menu--collapse .el-menu .el-submenu,
 .el-menu--popup {
   min-width: 120px !important;
@@ -265,7 +268,7 @@ button>span.el-button__text--expand {
   margin: 0px 0px !important;
 }
 
-/* 如果在AsideMenu定义, 关联的菜单组件可能读取不到某些覆盖的样式 */
+/* If defined in AsideMenu, menu components associated may not read some overridden styles */
 .el-sub-menu__title {
   padding: 0px 10px !important;
   border-radius: 6px;
@@ -277,7 +280,7 @@ button>span.el-button__text--expand {
   color: var(--el-color-primary);
 }
 
-/** 菜单折叠时hover菜单项高度这里必须再定义一次 */
+/* When menu is collapsed, hover menu item height must be redefined */
 .el-menu-item {
   border-radius: 6px;
   height: 32px !important;
@@ -298,7 +301,7 @@ button>span.el-button__text--expand {
   background-color: rgba(var(--el-color-primary-rgb), .1);
 }
 
-/* 分割线样式 */
+/* Divider styles */
 div.el-divider {
   margin: 18px auto;
 }
@@ -412,7 +415,7 @@ div.el-divider {
   align-items: center;
 }
 
-/* 全屏居中 */
+/* Fullscreen center */
 .full-center {
   width: 100%;
   height: 100%;
@@ -560,7 +563,7 @@ div.el-divider {
 }
 
 /**
- * 可换行的弹性布局
+ * Flex layout with multiline support
  */
 .card-row-wrap {
   display: flex;
@@ -569,31 +572,31 @@ div.el-divider {
   flex-wrap: wrap;
 }
 
-/** 卡片行内独占一行, 不能取代card-row-item wp-100 */
+/** Exclusive line in a card, doesn't replace card-row-item wp-100 */
 .card-row-aline {
   width: 100%;
-  /*防止撑开父元素, 要用flex布局*/
+  /* Prevent parent element to be affected, need a flex display */
   min-width: 0;
   margin: 8px 14px;
-  /** 为子元素预留margin空间 */
+  /* Reserve margin space for child elements in flex container */
   /* padding: 0px 10px; */
   display: flex;
   justify-content: start;
   align-items: center;
 }
 
-/** 卡片行普通元素, 有固定宽度,自适应排版 */
+/* Card row item with fixed width and adaptive layout */
 .card-row-item {
-  /*防止撑开父元素*/
+  /* Prevent item from expanding parent container */
   min-width: 0;
   margin: 8px 14px;
-  /** 不自动换行,可设置高度 */
+  /* Flex layout without wrapping */
   display: flex;
   justify-content: start;
   align-items: start;
 }
 
-/* 元素水平居中 */
+/* Horizontal centering utility class */
 .item-h-center {
   margin: 0 auto;
 }
@@ -603,30 +606,30 @@ div.el-divider {
   line-height: 32px;
 }
 
-/* 第一个子元素 */
+/* First child element styling in card rows */
 .card-row-item>span:first-child,
 .card-row-item>label:first-child {
   align-self: start;
   width: 100px;
 }
 
-/* 第二个子元素是span时 */
+/* Second child span element styling */
 .card-row-item>span:nth-child(2) {
   width: 240px;
   padding-left: 12px;
 }
 
-/* 第二个子元素是p时 */
+/* Second child paragraph element styling */
 .card-row-item>p:nth-child(2) {
   padding: 5px 12px;
 }
 
-/* 第二个子元素 */
+/* General second child element styling */
 .card-row-item>*:nth-child(2) {
   width: 240px;
 }
 
-/* 第二个子元素 独占一行时 */
+/* Full-width modifier for second child elements */
 .card-row-item.wp-100>*:nth-child(2) {
   width: calc(100% - 100px);
 }
@@ -636,7 +639,7 @@ div.el-divider {
 }
 
 /**
- * card行-无数据
+ * No data placeholder styling
  */
 .card-item-no-data {
   width: 100%;
@@ -663,17 +666,17 @@ div.el-divider {
   margin: -8px -14px;
 }
 
-/** 全屏视频背景包装模块 */
+/** Full-screen video background container */
 .video-bg-wrap {
   position: relative;
   width: 100%;
   height: 100vh;
-  /** 可设置背景在视频加载前或失败时做显示 设置为深色 */
+  /* Fallback background for video */
   background: #000 url('') no-repeat fixed center center / cover;
   overflow: hidden;
 }
 
-/** 全屏视频背景包装模块-视频样式 */
+/** Video element styling */
 .video-bg-wrap video {
   z-index: 0;
   position: absolute;
@@ -684,26 +687,24 @@ div.el-divider {
   object-fit: fill;
 }
 
-/** 全屏视频背景包装模块-前台内容样式 */
+/** Front content overlay for video background */
 .video-bg-wrap .front {
   z-index: 1;
-  /* 设置子元素为绝对定位 */
+  /* Set children to be absolute positioned */
   position: absolute;
-  /* 子元素顶部距离父元素顶部的距离为50% */
+  /* Center content */
   top: 50%;
-  /* 子元素左侧距离父元素左侧的距离为50% */
   left: 50%;
-  /* 使用transform进行微调，将子元素居中 */
   transform: translate(-50%, -50%);
   /* background-color: rgb(255, 255, 255, 0.9); */
-  /* 背景模糊 */
+  /* Blur background */
   backdrop-filter: blur(10px);
   /* opacity: 0.8; */
   border-radius: 6px;
 }
 
 /**
- * 色彩标签
+ * Color labels
  */
 .color-label {
   padding: 2px 6px;
@@ -711,7 +712,7 @@ div.el-divider {
 }
 
 /**
- * 布局管理器遮挡层
+ * Modal layer for layout manager
  */
 .layout-shade {
   position: fixed;
@@ -748,7 +749,7 @@ div.el-divider {
 }
 
 .adv-search {
-  /** 自动高度过渡动画 */
+  /** Height transitions for height */
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.3s ease-in-out;
@@ -763,7 +764,7 @@ div.el-divider {
 }
 
 /**
- * 背景颜色
+ * Background colors
  */
 .bg-primary {
   background-color: var(--el-color-primary);
@@ -786,43 +787,43 @@ div.el-divider {
   color: transparent;
 }
 
-/* 定义文字渐变色动画 */
+/* Color cycling animation for text */
 @keyframes text-color-change {
   0% {
     color: #ff3334;
-    /* 动画开始时的颜色 */
+    /* Color for beginning of animation */
   }
 
   20% {
     color: #ffcf00;
-    /* 动画中间时的颜色 */
+    /* Color for middle of animation */
   }
 
   40% {
     color: #66ccff;
-    /* 动画中间时的颜色 */
+    /* Color for middle of animation */
   }
 
   60% {
     color: #ff3399;
-    /* 动画中间时的颜色 */
+    /* Color for middle of animation */
   }
 
   80% {
     color: #9933ff;
-    /* 动画中间时的颜色 */
+    /* Color for middle of animation */
   }
 
   100% {
     color: #19e713;
-    /* 动画结束时的颜色 */
+    /* Color for ending of animation */
   }
 }
 
-/* 应用动画到元素 */
+/* Animated text element */
 .animated-text {
   animation: text-color-change 2s infinite alternate;
-  /* 动画名称，持续时间，循环次数，方向 */
+  /* Animation name, duration, iteration count, direction */
 }
 
 @keyframes hue {
