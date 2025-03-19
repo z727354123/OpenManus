@@ -1,12 +1,12 @@
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
 
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { terser } from 'rollup-plugin-terser'
+import AutoImport from 'unplugin-auto-import/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import Components from 'unplugin-vue-components/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -37,16 +37,16 @@ export default defineConfig({
   },
   build: {
     chunkSizeWarningLimit: 1500,
-    // 分解块，将大块分解成更小的块
+    // Split into chunks
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            // 让每个插件都打包成独立的文件
-            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+            // Pack each package into a separate chunk
+            return id.toString().split('node_modules/')[1].split('/')[0].toString()
           }
         },
-        // 单位b, 合并较小模块
+        // In bytes, merge small modules
         experimentalMinChunkSize: 10 * 1024,
       }
     },

@@ -18,7 +18,7 @@ export default {
   createdDt: "Created Date",
   updatedDt: "Updated Date",
   noData: "No Data",
-  
+
   menu: {
     task: "Task",
     history: "History",

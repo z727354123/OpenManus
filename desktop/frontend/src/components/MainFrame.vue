@@ -25,17 +25,18 @@
       </el-header>
       <el-main>
         <el-scrollbar style="width: 100%;">
-          <!-- 路由展示区 -->
-          <!-- { Component }指当前路由所对应的组件 -->
+          <!-- Router View Container -->
+          <!-- { Component } = currently matched route component -->
           <RouterView v-slot="{ Component }">
-            <!-- 添加过渡动画 需要确保插入的component元素只有一个根节点, 否则报错. component中的根元素的transition会覆盖transitionName的样式
-             而且需要保证component中根元素的宽度相同所以最好是统一给component添加一个根元素 -->
+            <!-- Cached Route Transition: Only keeps alive components with keepAlive meta flag
+             Transition animation requires single root element in component Key ensures proper re-rendering on route path changes -->
             <transition :name="transitionName">
               <KeepAlive>
                 <Component :is="Component" v-if="keepAlive" :key="$route.path" />
               </KeepAlive>
             </transition>
-            <!-- 添加过渡动画 需要确保插入的component元素只有一个根节点 -->
+            <!-- Non-cached Route Transition: Fresh instance for other components
+             Separate transition to prevent animation conflicts -->
             <transition :name="transitionName">
               <Component :is="Component" v-if="!keepAlive" :key="$route.path" />
             </transition>
@@ -66,46 +67,49 @@ const config = useConfig()
 const { shrink, menuCollapse } = storeToRefs(config)
 const currentRoute = reactive(router.currentRoute)
 
-// 默认动画效果, 向左滑动
+// Default transition effect, slide to the left
 let transitionName = 'slide-left'
 
 const keepAlive = computed(() => {
   return currentRoute.value.meta.keepAlive
 })
 
-/** 固定菜单头展开折叠动画时间 刷新页面时菜单不会展开或折叠, 设置持续时间为0, 不产生动画 */
+/**
+ * Set the menu animation duration to 0ms on page refresh to prevent the menu from expanding or collapsing
+ * with an animation. This ensures that the menu state remains consistent after a page reload.
+ */
 const menuAnimationDuration = ref(0)
 
-// 菜单折叠展开切换
+// Function to toggle the menu between expanded and collapsed states
 function menuToggle() {
   menuAnimationDuration.value = '300ms'
 
   if (menuCollapse.value) {
-    // console.log("折叠状态下, 进行展开菜单")
+    // console.log("Extend menu")
     if (shrink.value) {
-      // 收缩时, 展开遮罩
+      // Expend the shade if menu is collapsing
       showShade(() => {
-        // console.log("这里定义关闭遮罩回调函数, 关闭遮罩后, 折叠菜单")
+        // Callback function to close the shade after the menu has collapsed
         config.setMenuCollapse(true)
       })
     }
   } else {
-    // console.log("展开状态下, 进行折叠菜单, 关闭掉侧栏遮罩")
+    // If the menu is in an expanded state, close the shade
     closeShade()
   }
-  // 切换菜单折叠状态
+  // Toggle the menu state
   config.setMenuCollapse(!menuCollapse.value)
 }
 
 function onAdaptiveLayout() {
-  // 获取当前窗口宽度
+  // Get the current window width
   const clientWidth = document.body.clientWidth
   // console.log("menuCollapse:", menuCollapse.value, config.getMenuCollapse(), "clientWidth:", clientWidth)
-  // 设定aside是否收缩
+  // Determine if the aside menu should be shrunk based on the window width
   if (clientWidth < 800) {
     config.setShrink(true)
     if (!menuCollapse.value) {
-      // 展开状态下, 收起菜单
+      // Collapse the menu if it is not already collapsed
       menuToggle()
     }
   } else {
@@ -119,16 +123,15 @@ onBeforeMount(() => {
 })
 
 watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
-  // console.log("路由变化,如果是收缩状态,则收起菜单:", newValue, oldValue)
+  // If the layout is shrunk and the menu is expanded, collapse the menu
   if (shrink.value && !menuCollapse.value) {
-    // console.log("收缩状态下, 且菜单展开时, 收起菜单")
     menuToggle()
   }
 
 })
 
 function refresh() {
-  // console.log("刷新页面")
+  // Reload the page
   location.reload()
 }
 
@@ -144,9 +147,9 @@ header {
   height: 44px;
   padding: 0px;
   /* width: calc(100% -32px);
-  margin-left: 16px;
-  margin-right: 16px;
-  border-radius: 6px; */
+    margin-left: 16px;
+    margin-right: 16px;
+    border-radius: 6px; */
   background-color: var(--el-fg-color);
   display: flex;
   justify-content: center;
@@ -182,7 +185,7 @@ main {
   white-space: nowrap;
 }
 
-/** 菜单折叠 */
+/* Keyframes for the menu collapse animation */
 @keyframes menuCollapse {
   0% {
     width: 200px;
@@ -193,7 +196,7 @@ main {
   }
 }
 
-/** 菜单展开 */
+/* Keyframes for the menu expand animation */
 @keyframes menuExpand {
   0% {
     width: 44px;
@@ -209,9 +212,9 @@ main {
   z-index: 9999;
   height: 44px;
   width: 44px;
-  /* 引用上面定义的@keyframes名称 */
+  /* Reference to the keyframes */
   animation-name: menuCollapse;
-  /* 动画持续时间 */
+  /* Duration of the animation */
   animation-duration: v-bind('menuAnimationDuration');
   animation-timing-function: ease-in-out;
   background-color: var(--el-fg-color);
@@ -222,13 +225,13 @@ main {
   z-index: 9999;
   height: 44px;
   width: 200px;
-  /* 引用上面定义的@keyframes名称 */
+  /* Reference to the keyframes */
   animation-name: menuExpand;
-  /* 动画持续时间 */
+  /* Duration of the animation */
   animation-duration: v-bind('menuAnimationDuration');
   animation-timing-function: ease-in-out;
   background-color: var(--el-fg-color);
-  z-index: 9999999
+  z-index: 9999999;
 }
 
 .scrollbar-menu-wrapper {
@@ -240,6 +243,6 @@ main {
 .scrollbar-menu-wrapper.shrink {
   position: fixed;
   left: 0;
-  z-index: 9999999
+  z-index: 9999999;
 }
 </style>

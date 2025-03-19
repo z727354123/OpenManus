@@ -53,7 +53,7 @@ nodejs: https://nodejs.org/en
 To run the project:
 
     cd .\desktop
-    wails dev 
+    wails dev
 
 To start the backend service:
 
@@ -69,7 +69,3 @@ To build the application:
     wails build
 
 The built application will be located in the project’s dist directory.
-
-
-
-

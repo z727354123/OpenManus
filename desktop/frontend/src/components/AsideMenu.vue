@@ -52,7 +52,7 @@ const handleClose = (key, keyPath) => {
   // console.log(key, keyPath)
 }
 
-// 菜单
+// Menu List
 const menuList = [
   {
     index: "M02",
@@ -89,7 +89,7 @@ const menuList = [
 ]
 
 onMounted(() => {
-  // 页面刷新后,检查菜单定位
+  // Check menu position after refresh
   // activeMenu()
 })
 
@@ -107,11 +107,11 @@ function listSubMenu(menuCode) {
 
 watch(() => router.currentRoute.value.path, (newValue, oldValue) => {
   // console.log('LeftMenu侦听到router.currentRoute.value.path发生更新', newValue, oldValue)
-  // 路由发生变更后,检查菜单定位
+  // Check menu position after route change
   activeMenu()
 })
 
-// 检查激活的菜单
+// Check activated menu position
 function activeMenu() {
   const currRoute = router.currentRoute
   const path = currRoute.value.path
@@ -121,13 +121,13 @@ function activeMenu() {
   if (utils.notNull(index)) {
     return index
   }
-  // 没有匹配上,截取掉path最后一级,再匹配一次
+  // No match, try to find menu for parent path
   const lastIndex = path.lastIndexOf('/')
   if (lastIndex != -1) {
     const newPath = path.substring(0, lastIndex)
-    console.log("截取后newPath:", newPath)
+    console.log("newPath from parent path:", newPath)
     index = getIndexByPath(newPath)
-    console.log("截取后index:", index)
+    console.log("index from parent path:", index)
     if (utils.notNull(index)) {
       return index
     }
@@ -135,7 +135,7 @@ function activeMenu() {
   return "1"
 }
 
-// 根据路径查询菜单index
+// Query menu index by path
 function getIndexByPath(path) {
   for (let fstMenu of menuList) {
     // console.log(fstMenu.index, fstMenu.href == path)
@@ -157,7 +157,7 @@ function getIndexByPath(path) {
               return thdMenu.index
             }
           }
-          // 三级菜单path都没匹配上,取路由配置中的to进行匹配
+          // If no third-level menu path matches, use the 'to' from the route configuration to find a match
           for (let thdMenu of thdMenuList) {
             const nodeList = routeMap.get(path)
             if (utils.isEmpty(nodeList)) {
@@ -165,14 +165,14 @@ function getIndexByPath(path) {
             }
             for (let node of nodeList) {
               if (node.to == thdMenu.href) {
-                // console.log("匹配上node.to:", node.to)
+                // console.log("A match was found for node.to:", node.to)
                 return thdMenu.index
               }
             }
           }
         }
       }
-      // 二级菜单都没匹配上,取路由配置中的to进行匹配
+      // Iterate through each secondary menu item in the secMenuList
       for (let secMenu of secMenuList) {
         // console.log(secMenu.index, secMenu.href == path)
         const nodeList = routeMap.get(path)
@@ -187,13 +187,13 @@ function getIndexByPath(path) {
         }
       }
     }
-    // 一级菜单都没匹配上,取路由配置中的to进行匹配
+    // None of the menu items match the path, try to find a match for the 'to' from the route configuration
 
   }
 }
 
-// 获取routes配置
-const routes = router.options.routes;
+// get routes configuration
+const routes = router.options.routes
 // console.log("routes:", routes)
 const routeMap = new Map()
 routes.forEach(lv1 => {
@@ -261,7 +261,7 @@ function getMenuNameByCode(code) {
 
 <style scoped>
 span {
-  /* 防止双击选中 */
+  /* Prevent text selection from double-clicking */
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -269,16 +269,16 @@ span {
 }
 
 span {
-  /* 字体大小 */
+  /* Font size */
   font-size: 16px;
 }
 
 li {
-  /* 字体大小 */
+  /* Font size */
   font-size: 15px;
 }
 
-/** 菜单折叠时hover菜单项高度这里必须再定义一次 */
+/** When the menu is collapsed, redefine the hover menu height */
 .el-menu-item {
   min-width: 44px;
   height: 36px;

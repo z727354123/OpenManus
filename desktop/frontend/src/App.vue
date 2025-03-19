@@ -1,5 +1,5 @@
 <template>
-  <!-- 全局配置 -->
+  <!-- Global Configuration -->
   <el-config-provider :size="size" :z-index="zIndex" :locale="locale" :button="config" :message="config"
     :value-on-clear="null" :empty-values="[undefined, null]">
     <RouterView />
@@ -10,7 +10,7 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import en from 'element-plus/es/locale/lang/en'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
-/** 暗黑主题 */
+/** Dark Theme */
 import { useDark, useStorage } from '@vueuse/core'
 
 const size = 'default'
@@ -19,14 +19,14 @@ const zIndex = 2000
 const localConfig = localStorage.getItem('config') ? JSON.parse(localStorage.getItem('config')) : {}
 
 const localeStr = localConfig.selectedLang ? localConfig.selectedLang.code : 'en'
-const locale = localeStr == 'en'? en : zhCn
+const locale = localeStr == 'en' ? en : zhCn
 
 const isDark = useDark()
-// 存储用户的喜好
+// Store user preferences
 const userPrefersDark = ref(null)
 onMounted(() => {
 
-  // 使用 useStorage 钩子来同步 isDark 和本地存储
+  // Use useStorage hook to sync isDark and local storage
   useStorage(
     'user-prefers-dark',
     userPrefersDark,
@@ -35,17 +35,17 @@ onMounted(() => {
   )
 })
 
-// 监听 isDark 变化，并更新本地存储
+// Watch isDark changes and update local storage
 watch(isDark, (newValue) => {
   userPrefersDark.value = newValue ? 'dark' : 'light'
 })
 
 
-/* 全局配置 */
+/* Global Configuration */
 const config = reactive({
-  // 按钮-中文字符中间自动插入空格
+  // Button - Automatically insert space between Chinese characters
   autoInsertSpace: true,
-  // 消息-可同时显示的消息最大数量
+  // Message - Maximum number of messages that can be displayed simultaneously
   max: 3,
 })
 </script>

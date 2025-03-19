@@ -1,7 +1,7 @@
 import { useEventListener } from '@vueuse/core'
 
 /*
- * 显示页面遮罩
+ * Show page shade
  */
 export const showShade = function (closeCallBack) {
   const className = 'shade'
@@ -13,7 +13,7 @@ export const showShade = function (closeCallBack) {
 }
 
 /*
- * 隐藏页面遮罩
+ * Hide page shade
  */
 export const closeShade = function (closeCallBack = () => { }) {
   const shadeEl = document.querySelector('.layout-shade')

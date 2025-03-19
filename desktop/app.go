@@ -35,7 +35,7 @@ func (a *App) Greet(name string) string {
 
 // ReadAll reads file content
 func (a *App) ReadAll(filePath string) string {
-	// 读取文件内容,得到一个含文件内容和callbackid的json字符串
+	// Read the file content, resulting in a JSON string containing file content and callback ID
 	data := string(utils.ReadAll(filePath))
 	utils.Log("ReadAll data: ", data)
 	return data

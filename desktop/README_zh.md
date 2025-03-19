@@ -53,7 +53,7 @@ nodejs官网安装: https://nodejs.org/en
 运行项目:
 
     cd .\desktop
-    wails dev 
+    wails dev
 
 启动服务端:
 
@@ -69,7 +69,3 @@ nodejs官网安装: https://nodejs.org/en
     wails build
 
 构建好的应用在项目dist目录下
-
-
-
-
