@@ -1,21 +1,22 @@
 import argparse
 import asyncio
+import atexit
 import json
 import logging
 import os
 import sys
+from inspect import Parameter, Signature
+from typing import Any, Optional
 
 from mcp.server.fastmcp import FastMCP
 
 
-# Add current directory to Python path
+# Add directories to Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
+root_dir = os.path.dirname(parent_dir)
 sys.path.insert(0, parent_dir)
 sys.path.insert(0, current_dir)
-
-# Add root directory to Python path
-root_dir = os.path.dirname(parent_dir)
 sys.path.insert(0, root_dir)
 
 # Configure logging
@@ -24,10 +25,12 @@ logging.basicConfig(
 )
 logger = logging.getLogger("mcp-server")
 
+from app.tool.base import BaseTool
+from app.tool.bash import Bash
+
 # Import OpenManus tools
 from app.tool.browser_use_tool import BrowserUseTool
-from app.tool.file_saver import FileSaver
-from app.tool.python_execute import PythonExecute
+from app.tool.str_replace_editor import StrReplaceEditor
 from app.tool.terminate import Terminate
 
 
@@ -35,109 +38,119 @@ from app.tool.terminate import Terminate
 openmanus = FastMCP("openmanus")
 
 # Initialize tool instances
+bash_tool = Bash()
 browser_tool = BrowserUseTool()
-python_execute_tool = PythonExecute()
-file_saver_tool = FileSaver()
+str_replace_editor_tool = StrReplaceEditor()
 terminate_tool = Terminate()
 
 
-# Browser tool
-@openmanus.tool()
-async def browser_use(
-    action: str,
-    url: str = None,
-    index: int = None,
-    text: str = None,
-    script: str = None,
-    scroll_amount: int = None,
-    tab_id: int = None,
-) -> str:
-    """Execute various browser operations.
+def register_tool(tool: BaseTool, method_name: Optional[str] = None) -> None:
+    """Register a tool with the OpenManus server.
 
     Args:
-        action: The browser operation to execute, possible values include:
-            - navigate: Navigate to specified URL
-            - click: Click on an element on the page
-            - input_text: Input text into a text field
-            - screenshot: Take a screenshot of the current page
-            - get_html: Get HTML of the current page
-            - get_text: Get text content of the current page
-            - execute_js: Execute JavaScript code
-            - scroll: Scroll the page
-            - switch_tab: Switch to specified tab
-            - new_tab: Open new tab
-            - close_tab: Close current tab
-            - refresh: Refresh current page
-        url: URL for 'navigate' or 'new_tab' operations
-        index: Element index for 'click' or 'input_text' operations
-        text: Text for 'input_text' operation
-        script: JavaScript code for 'execute_js' operation
-        scroll_amount: Scroll pixels for 'scroll' operation (positive for down, negative for up)
-        tab_id: Tab ID for 'switch_tab' operation
+        tool: The tool instance to register
+        method_name: Optional custom name for the tool method
     """
-    logger.info(f"Executing browser operation: {action}")
-    result = await browser_tool.execute(
-        action=action,
-        url=url,
-        index=index,
-        text=text,
-        script=script,
-        scroll_amount=scroll_amount,
-        tab_id=tab_id,
-    )
-    return json.dumps(result.model_dump())
+    tool_name = method_name or tool.name
+
+    # Get tool information using its own methods
+    tool_param = tool.to_param()
+    tool_function = tool_param["function"]
+
+    # Define the async function to be registered
+    async def tool_method(**kwargs):
+        logger.info(f"Executing {tool_name}: {kwargs}")
+        result = await tool.execute(**kwargs)
+
+        # Handle different types of results
+        if hasattr(result, "model_dump"):
+            return json.dumps(result.model_dump())
+        elif isinstance(result, dict):
+            return json.dumps(result)
+        return result
+
+    # Set the function name
+    tool_method.__name__ = tool_name
+
+    # Set the function docstring
+    description = tool_function.get("description", "")
+    param_props = tool_function.get("parameters", {}).get("properties", {})
+    required_params = tool_function.get("parameters", {}).get("required", [])
+
+    # Build a proper docstring with parameter descriptions
+    docstring = description
+
+    # Create parameter list separately for the signature
+    parameters = []
+
+    # Add parameters to both docstring and signature
+    if param_props:
+        docstring += "\n\nParameters:\n"
+        for param_name, param_details in param_props.items():
+            required_str = (
+                "(required)" if param_name in required_params else "(optional)"
+            )
+            param_type = param_details.get("type", "any")
+            param_desc = param_details.get("description", "")
+
+            # Add to docstring
+            docstring += (
+                f"    {param_name} ({param_type}) {required_str}: {param_desc}\n"
+            )
+
+            # Create parameter for signature
+            default = Parameter.empty if param_name in required_params else None
+            annotation = Any
+
+            # Try to get a better type annotation based on the parameter type
+            if param_type == "string":
+                annotation = str
+            elif param_type == "integer":
+                annotation = int
+            elif param_type == "number":
+                annotation = float
+            elif param_type == "boolean":
+                annotation = bool
+            elif param_type == "object":
+                annotation = dict
+            elif param_type == "array":
+                annotation = list
+
+            # Create parameter
+            param = Parameter(
+                name=param_name,
+                kind=Parameter.KEYWORD_ONLY,
+                default=default,
+                annotation=annotation,
+            )
+            parameters.append(param)
+
+    # Store the full docstring
+    tool_method.__doc__ = docstring
+
+    # Create and set the signature
+    tool_method.__signature__ = Signature(parameters=parameters)
+
+    # Store the complete parameter schema for tools that need to access it programmatically
+    tool_method._parameter_schema = {
+        param_name: {
+            "description": param_details.get("description", ""),
+            "type": param_details.get("type", "any"),
+            "required": param_name in required_params,
+        }
+        for param_name, param_details in param_props.items()
+    }
+
+    # Register the tool with FastMCP
+    openmanus.tool()(tool_method)
+    logger.info(f"Registered tool: {tool_name}")
 
 
-@openmanus.tool()
-async def get_browser_state() -> str:
-    """Get current browser state, including URL, title, tabs and interactive elements."""
-    logger.info("Getting browser state")
-    result = await browser_tool.get_current_state()
-    return json.dumps(result.model_dump())
-
-
-# Python execution tool
-@openmanus.tool()
-async def python_execute(code: str, timeout: int = 5) -> str:
-    """Execute Python code and return results.
-
-    Args:
-        code: Python code to execute
-        timeout: Execution timeout in seconds
-    """
-    logger.info("Executing Python code")
-    result = await python_execute_tool.execute(code=code, timeout=timeout)
-    return json.dumps(result)
-
-
-# File saver tool
-@openmanus.tool()
-async def file_saver(content: str, file_path: str, mode: str = "w") -> str:
-    """Save content to local file.
-
-    Args:
-        content: Content to save
-        file_path: File path
-        mode: File open mode (default is 'w')
-    """
-    logger.info(f"Saving file: {file_path}")
-    result = await file_saver_tool.execute(
-        content=content, file_path=file_path, mode=mode
-    )
-    return result
-
-
-# Terminate tool
-@openmanus.tool()
-async def terminate(status: str) -> str:
-    """Terminate program execution.
-
-    Args:
-        status: Termination status, can be 'success' or 'failure'
-    """
-    logger.info(f"Terminating execution: {status}")
-    result = await terminate_tool.execute(status=status)
-    return result
+# Register all tools
+register_tool(bash_tool)
+register_tool(browser_tool)
+register_tool(str_replace_editor_tool)
+register_tool(terminate_tool)
 
 
 # Clean up resources
@@ -148,9 +161,6 @@ async def cleanup():
 
 
 # Register cleanup function
-import atexit
-
-
 atexit.register(lambda: asyncio.run(cleanup()))
 
 
@@ -168,6 +178,5 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-
     logger.info("Starting OpenManus server (stdio mode)")
     openmanus.run(transport="stdio")
